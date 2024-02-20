@@ -14,7 +14,8 @@ const io = new Server(server)
 
 
 app.use(morgan("dev"))
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }))
+app.use(express.static("src"))
 app.use(express.json())
 app.use(
   session({
@@ -26,9 +27,9 @@ app.use(
 
 
 
-//Routes
+// Routes
 app.get('/', (req, res) => {
-    res.sendFile('/Users/davyc/devMountain/practiceServer/src/index.html')
+    res.sendFile('/Users/davyc/devMountain/chess-full-project/index.html')
 })
 
 io.on('connection', (socket) => {
@@ -45,4 +46,7 @@ io.on('connection', (socket) => {
 
 
 // Run the server
-server.listen( 8181, () => console.log('Now listening on http://localhost:8181'))
+server.listen(8181, () => console.log('Now listening on http://localhost:8181'))
+// ViteExpress.listen(app, 8181, () => console.log("Listening on http://localhost:8181"))
+
+ViteExpress.bind(app, server)
