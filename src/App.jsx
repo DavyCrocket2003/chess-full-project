@@ -1,7 +1,18 @@
+import Draggable from "react-draggable"
+// import Square from "Square.jsx"
 
 function App() {
+  const handleChat = (e) => {
+
+  }
+
+
   return (
-    <h1>TEST</h1>
+    <Draggable>
+      <div>
+        <h1>Move Me</h1>
+      </div>
+    </Draggable>
   )
 }
 

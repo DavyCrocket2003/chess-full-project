@@ -6,11 +6,10 @@ import ViteExpress from "vite-express"
 import http from "http"
 import { Server } from "socket.io"
 
-
+const port = 8800
 
 const app = express()
-const server = http.createServer(app)
-const io = new Server(server)
+
 
 
 app.use(morgan("dev"))
@@ -25,12 +24,11 @@ app.use(
   })
 )
 
+const httpServer = http.createServer(app)
+const io = new Server(httpServer)
 
 
-// Routes
-app.get('/', (req, res) => {
-    res.sendFile('/Users/davyc/devMountain/chess-full-project/index.html')
-})
+
 
 io.on('connection', (socket) => {
     console.log('user connected')
@@ -46,7 +44,7 @@ io.on('connection', (socket) => {
 
 
 // Run the server
-server.listen(8181, () => console.log('Now listening on http://localhost:8181'))
-// ViteExpress.listen(app, 8181, () => console.log("Listening on http://localhost:8181"))
+httpServer.listen(port, () => console.log(`Now listening on http://localhost:${port}`))
+// ViteExpress.listen(app, 8181, () => console.log(`Listening on http://localhost:${port}`))
 
-ViteExpress.bind(app, server)
+ViteExpress.bind(app, httpServer)
