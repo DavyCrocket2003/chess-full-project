@@ -1,19 +1,35 @@
-import Draggable from "react-draggable"
-// import Square from "Square.jsx"
+import React, {useState} from 'react';
+import {DndContext} from '@dnd-kit/core';
 
-function App() {
-  const handleChat = (e) => {
+import {Droppable} from './Droppable';
+import {Draggable} from './Draggable';
 
-  }
-
+export default function App() {
+  const containers = ['A', 'B', 'C'];
+  const [parent, setParent] = useState(null);
+  const draggableMarkup = (
+    <Draggable id="draggable"><img src="pieces/king.png" alt="Chess King" /></Draggable>
+  );
 
   return (
-    <Draggable>
-      <div>
-        <h1>Move Me</h1>
-      </div>
-    </Draggable>
-  )
-}
+    <DndContext onDragEnd={handleDragEnd}>
+      {parent === null ? draggableMarkup : null}
 
-export default App
+      {containers.map((id) => (
+        // We updated the Droppable component so it would accept an `id`
+        // prop and pass it to `useDroppable`
+        <Droppable key={id} id={id}>
+          {parent === id ? draggableMarkup : 'Drop here'}
+        </Droppable>
+      ))}
+    </DndContext>
+  );
+
+  function handleDragEnd(event) {
+    const {over} = event;
+
+    // If the item is dropped over a container, set it as the parent
+    // otherwise reset the parent to `null`
+    setParent(over ? over.id : null);
+  }
+};
