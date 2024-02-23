@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { DndContext } from '@dnd-kit/core';
 import './ChessBoard.css';
+import Square from './Square';
+import Piece from './Piece';
 
-import { Droppable } from '../Droppable';
-import { Draggable } from '../Draggable';
-
-export default function ChessBoard() {
+export default function ChessBoard(props) {
   const [parent, setParent] = useState(null);
-  const draggableMarkup = (
-    <Draggable id="king"><img src="pieces/king.png" alt="Chess King" /></Draggable>
+  const markup = (
+    <Piece id="king" piece="K"/>
   );
   let squareKeys = []
   for (let i=1; i<9; i++) {
@@ -16,23 +15,27 @@ export default function ChessBoard() {
         squareKeys.push(`${i}${j}`)
     }
   }
+  let whiteColor = props.whiteColor ? props.whiteColor : 'white'
+  let blackColor = props.blackColor ? props.blackColor : 'black'
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      {parent === null ? draggableMarkup : null}
-      <div className="grid-container">
-        <div className="grid">
-            {squareKeys.map((key) => (
-                <div className="square" key={key}>
-                    <Droppable id={key} />
-                </div>
-            ))}
-        </div>
+      <div style={{height: '10px'}}>
+        {parent === null ? markup : null}
       </div>
+      <div className="grid">
+      {squareKeys.map((key) => (
+        
+          <Square key={key} id={key} parent={parent} bc={(+key[0] + +key[1]) % 2 ? blackColor : whiteColor}/>
+        
+      ))}
+      </div>
+      <p>{parent ? parent : 'No Parent'}</p>
     </DndContext>
   );
 
   function handleDragEnd(event) {
+    console.log('handleDragEnd called')
     const { over } = event;
 
     // If the item is dropped over a container, set it as the parent

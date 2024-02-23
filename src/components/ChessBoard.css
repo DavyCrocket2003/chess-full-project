@@ -1,0 +1,17 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    width: 100%;
+    max-width: 80vh;
+    margin: auto;
+    padding-left: 5%;
+    padding-right: 5%;
+    color: #e1e1e1;
+  }
+  
+  .square {
+    border: solid black 1px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    background-color: #e1e1e1;
+  }
