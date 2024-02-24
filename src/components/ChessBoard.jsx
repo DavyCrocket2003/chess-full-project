@@ -3,38 +3,58 @@ import { DndContext } from '@dnd-kit/core';
 import './ChessBoard.css';
 import Square from './Square';
 import Piece from './Piece';
+import { useSelector, useDispatch } from 'react-redux';
+import {snapCenterToCursor} from '@dnd-kit/modifiers'
 
 export default function ChessBoard(props) {
   console.log('ChessBoard Rendered')
-  const [parent, setParent] = useState(null);
+  const dragOrigin = useSelector((state) => state.dragOrigin)
+  const onBottom = useSelector((state) => state.onBottom)
+  const squares = useSelector((state) => state.squares)
+  console.log(squares)
   let squareKeys = []
-  for (let i=8; i>0; i--) {
-    for (let j=1; j<9; j++) {
+  // ternary used below to conditionally loop based on what player should be at the bottom
+  for (let i = (onBottom==='white' ? 8 : 1); i!== (onBottom === 'white' ? 0 : 9); i += (onBottom === 'white' ? -1 : 1)) {
+    for (let j = (onBottom==='white' ? 1 : 8); j!== (onBottom === 'white' ? 9 : 0); j += (onBottom === 'white' ? 1 : -1)) {
         squareKeys.push(`${i}${j}`)
     }
   }
-  let whiteColor = props.whiteColor ? props.whiteColor : 'white'
-  let blackColor = props.blackColor ? props.blackColor : 'black'
+  const whiteColor = useSelector((state) => state.whiteColor)
+  const blackColor = useSelector((state) => state.blackColor)
+  // let whiteColor = props.whiteColor ? props.whiteColor : 'white'
+  // let blackColor = props.blackColor ? props.blackColor : 'black'
+  const dispatch = useDispatch()
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext modifiers={[snapCenterToCursor]} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
       <div className="grid">
       {squareKeys.map((key) => (
         
-          <Square key={key} id={key} parent={parent} bc={(+key[0] + +key[1]) % 2 ? blackColor : whiteColor}/>
+          <Square key={key} id={key} bc={(+key[0] + +key[1]) % 2 ? whiteColor : blackColor}/>
         
       ))}
       </div>
-      <p>{parent ? parent : 'No Parent'}</p>
     </DndContext>
   );
 
+  // function that updates the board state after a piece move
   function handleDragEnd(event) {
     console.log('handleDragEnd called')
     const { over } = event;
-
-    // If the item is dropped over a container, set it as the parent
-    // otherwise reset the parent to `null`
-    setParent(over ? over.id : null);
+    if (over) {
+      dispatch({
+        type: "UPDATE_BOARD",
+        payload: {[dragOrigin.square]: {piece: '', moves: []}, [over.id]: {piece: dragOrigin.piece, moves: []}}
+      })
+    }
+    dispatch({type: 'DROP_PIECE'})
+  }
+  // function that watches for a "GRAB_PIECE" action to record the origin square and piece
+  function handleDragStart(event) {
+    console.log(event)
+    const {id} = event.active
+    const square = id.slice(1)
+    const piece = squares[square].piece
+    dispatch({type: "GRAB_PIECE", payload: {square: square, piece: piece}})
   }
 }

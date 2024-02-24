@@ -1,4 +1,10 @@
 const initialState = {
+    'pieceStyle': 'old',      // 'old' or 'new'
+    'blackColor': '#583927',    // '#2E6F1E', // '#583927',
+    'whiteColor': '#EAC796', //'#56A62E',    // '#5f9ea0',    // 
+    'dragOrigin': {square: null, piece: ''},
+    'onBottom': 'white',
+    squares: {
     '11': {piece: 'R', moves: []},
     '12': {piece: 'N', moves: ['31','33']},
     '13': {piece: 'B', moves: []},
@@ -62,7 +68,8 @@ const initialState = {
     '85': {piece: 'k', moves: []},
     '86': {piece: 'b', moves: []},
     '87': {piece: 'n', moves: ['66','68']},
-    '88': {piece: 'r', moves: []},
+    '88': {piece: 'r', moves: []}
+    }
     
 }
 
@@ -74,9 +81,13 @@ export default function reducer(state = initialState, action) {
         case "UPDATE_BOARD":
             let newState = {...state}
             for (let square in action.payload) {
-                newState[square] = action.payload[square]
+                newState.squares[square] = action.payload[square]
             }
             return newState
+        case "GRAB_PIECE":
+            return {...state, dragOrigin: action.payload}
+        case "DROP_PIECE":
+            return {...state, dragOrigin: {square: null, piece: ''}}
         default:
             return state
     }

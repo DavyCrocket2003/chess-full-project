@@ -1,5 +1,6 @@
 import React from 'react'
 import {useDraggable} from '@dnd-kit/core';
+import { useSelector } from 'react-redux';
 
 function Piece(props) {
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
@@ -8,25 +9,26 @@ function Piece(props) {
   const style =transform ? {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
   } : undefined;
-
+  const pieceStyle = useSelector((state) => state.pieceStyle)
+  const extension = {'old': 'png', 'new': 'svg'}[pieceStyle]
   const pieceRoutes = {
-    P: 'pawn.png',
-    R: 'rook.png',
-    N: 'knight.png',
-    B: 'bishop.png',
-    Q: 'queen.png',
-    K: 'king.png',
-    p: 'pawn1.png',
-    r: 'rook1.png',
-    n: 'knight1.png',
-    b: 'bishop1.png',
-    q: 'queen1.png',
-    k: 'king1.png',
+    P: 'pawn',
+    R: 'rook',
+    N: 'knight',
+    B: 'bishop',
+    Q: 'queen',
+    K: 'king',
+    p: 'pawn1',
+    r: 'rook1',
+    n: 'knight1',
+    b: 'bishop1',
+    q: 'queen1',
+    k: 'king1',
   }
     
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {props.piece !== "" ? (<img src={`../pieces/${pieceRoutes[props.piece]}`} alt={pieceRoutes[props.piece]} style={{ width: '100%', height: '100%' }}/>) : null}
+      {props.piece !== "" ? (<img src={`../pieces/${pieceRoutes[props.piece]}.${extension}`} alt={pieceRoutes[props.piece]} style={{ width: '100%', height: '100%'}}/>) : null}
     </div>
   )
 }
