@@ -8,7 +8,7 @@ export default function ChessBoard(props) {
   console.log('ChessBoard Rendered')
   const [parent, setParent] = useState(null);
   let squareKeys = []
-  for (let i=1; i<9; i++) {
+  for (let i=8; i>0; i--) {
     for (let j=1; j<9; j++) {
         squareKeys.push(`${i}${j}`)
     }
