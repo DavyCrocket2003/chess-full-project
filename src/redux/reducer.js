@@ -88,7 +88,7 @@ const reducer = (state = initialState, action) => {
         for (let square in action.payload) {
             newBoardState[square] = action.payload[square]
         }
-        newState = {...state, boardState: newBoardState}
+        newState = {...state, liveChess: {...state.liveChess, boardState: newBoardState}}
         return newState
   
         // triggered from front end with this dispatch action object: { type: "LOGOUT" }

@@ -5,10 +5,8 @@ import Square from './Square';
 import Piece from './Piece';
 
 export default function ChessBoard(props) {
+  console.log('ChessBoard Rendered')
   const [parent, setParent] = useState(null);
-  const markup = (
-    <Piece id="king" piece="K"/>
-  );
   let squareKeys = []
   for (let i=1; i<9; i++) {
     for (let j=1; j<9; j++) {
@@ -20,9 +18,6 @@ export default function ChessBoard(props) {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div style={{height: '10px'}}>
-        {parent === null ? markup : null}
-      </div>
       <div className="grid">
       {squareKeys.map((key) => (
         

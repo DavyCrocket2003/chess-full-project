@@ -1,3 +1,4 @@
+```
 const initialState = {
     "turn": 'white',
     "settings": {
@@ -73,14 +74,21 @@ const initialState = {
     "17": {piece: "N", legalMoves: ['36','38']},
     "18": {piece: "R", legalMoves: []},
 }
+```
+const initialState = {'11': 'THIS BETTER SHOW UP'}
 
-export default reducer(state = initialState, action) {
+const reducer = (state = initialState, action) => {
+    console.log("Reducer Called", state)
     switch (action.type) {
-        case 'move':
+        case 'MOVE':
             let newState = {...state}
-            for (let square in action.payload.setSquares) {
-                newState[square] = action.payload.moves[key]
+            for (let square in action.payload) {
+                newState[square].piece = action.payload[square]
             }
-            return {...state, }
+            return newState
+        default:
+            return state
     }
 }
+
+export default reducer

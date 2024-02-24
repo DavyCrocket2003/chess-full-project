@@ -26,7 +26,7 @@ function Piece(props) {
     
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      <img src={`../pieces/${pieceRoutes[props.piece]}`} alt={pieceRoutes[props.piece]} style={{ width: '100%', height: '100%' }}/>
+      {props.piece !== "" ? (<img src={`../pieces/${pieceRoutes[props.piece]}`} alt={pieceRoutes[props.piece]} style={{ width: '100%', height: '100%' }}/>) : null}
     </div>
   )
 }
