@@ -11,7 +11,7 @@ export default function ChessBoard(props) {
   const dragOrigin = useSelector((state) => state.dragOrigin)
   const onBottom = useSelector((state) => state.onBottom)
   const squares = useSelector((state) => state.squares)
-  console.log(squares)
+  // console.log(squares)
   let squareKeys = []
   // ternary used below to conditionally loop based on what player should be at the bottom
   for (let i = (onBottom==='white' ? 8 : 1); i!== (onBottom === 'white' ? 0 : 9); i += (onBottom === 'white' ? -1 : 1)) {
@@ -39,9 +39,9 @@ export default function ChessBoard(props) {
 
   // function that updates the board state after a piece move
   function handleDragEnd(event) {
-    console.log('handleDragEnd called')
-    const { over } = event;
-    if (over) {
+    // console.log('handleDragEnd called', event)
+    const { active, over } = event;
+    if (over && squares[active.id.slice(1)].moves.includes(over.id)) {
       dispatch({
         type: "UPDATE_BOARD",
         payload: {[dragOrigin.square]: {piece: '', moves: []}, [over.id]: {piece: dragOrigin.piece, moves: []}}
@@ -55,6 +55,7 @@ export default function ChessBoard(props) {
     const {id} = event.active
     const square = id.slice(1)
     const piece = squares[square].piece
-    dispatch({type: "GRAB_PIECE", payload: {square: square, piece: piece}})
+    const moves = squares[square].moves
+    dispatch({type: "GRAB_PIECE", payload: {square: square, piece: piece, moves:moves}})
   }
 }

@@ -45,6 +45,5 @@ io.on('connection', (socket) => {
 
 // Run the server
 httpServer.listen(port, () => console.log(`Now listening on http://localhost:${port}`))
-// ViteExpress.listen(app, 8181, () => console.log(`Listening on http://localhost:${port}`))
 
 ViteExpress.bind(app, httpServer)

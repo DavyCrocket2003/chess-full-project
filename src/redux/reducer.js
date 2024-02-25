@@ -1,8 +1,8 @@
 const initialState = {
-    'pieceStyle': 'old',      // 'old' or 'new'
+    'pieceStyle': 'new',      // 'old' or 'new'
     'blackColor': '#583927',    // '#2E6F1E', // '#583927',
-    'whiteColor': '#EAC796', //'#56A62E',    // '#5f9ea0',    // 
-    'dragOrigin': {square: null, piece: ''},
+    'whiteColor': 'white',  //'#EAC796', //'#56A62E',    // '#5f9ea0',    // 
+    'dragOrigin': {square: null, piece: '', moves: []},
     'onBottom': 'white',
     squares: {
     '11': {piece: 'R', moves: []},
