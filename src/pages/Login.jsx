@@ -1,6 +1,7 @@
 
 import {useSelector, useDispatch} from "react-redux"
 import axios from "axios"
+import { updateUserSession } from "../sessionActions"
 
 function Login() {
 
@@ -23,6 +24,13 @@ function Login() {
     console.log(userId, username, password)
     alert(res.data.message)
     console.log(res.data)
+  }
+
+  const handleLogout = async () => {
+    const res = await axios.get('/logout')
+    if (res.data.success) {
+      dispatch(updateUserSession({userId: null}))
+    }
   }
 
 
@@ -49,8 +57,11 @@ function Login() {
             />
         </form>
       }
-      {userId && 
+      {userId &&
+      <>
         <h3>Welcome, user # {userId}</h3>
+        <button onClick={handleLogout}>Logout</button>
+      </>
       }</>
     )
   }

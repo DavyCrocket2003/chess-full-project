@@ -5,8 +5,9 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { updateUserSession } from './sessionActions';
 
 
 
@@ -17,16 +18,17 @@ export default function App() {
 
   const userSession = useSelector((state) => state.session)
   const dispatch = useDispatch()
-
-  const handleLogin = async (e) => {
-    e.preventDefault
-
-    const reqObj = {
-      username: userSession.username,
-      password: userSession.password
+  const sessionCheck = async () => {
+    const res = await axios.get('/session-check')
+    if (res.data.success) {
+      dispatch(updateUserSession({userId: res.data.userId}))
     }
-
   }
+
+
+  useEffect(() => {
+    sessionCheck()
+  }, [])
 
 
   return (
