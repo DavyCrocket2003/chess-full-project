@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { DndContext } from '@dnd-kit/core';
 import './ChessBoard.css';
-import Square from './Square';
-import Piece from './Piece';
+import Square from '../components/Square';
+import Piece from '../components/Piece';
 import { useSelector, useDispatch } from 'react-redux';
 import {snapCenterToCursor} from '@dnd-kit/modifiers'
 
@@ -51,7 +51,6 @@ export default function ChessBoard(props) {
   }
   // function that watches for a "GRAB_PIECE" action to record the origin square and piece
   function handleDragStart(event) {
-    console.log(event)
     const {id} = event.active
     const square = id.slice(1)
     const piece = squares[square].piece

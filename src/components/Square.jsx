@@ -1,11 +1,10 @@
 import React from 'react'
-import {DndContext, useDraggable, useDroppable} from '@dnd-kit/core';
+import {useDroppable} from '@dnd-kit/core';
 import Piece from './Piece';
 import { useSelector } from 'react-redux';
 
 function Square(props) {
   const {isOver, setNodeRef} = useDroppable({id: props.id})
-  console.log('Square called', props)
 
   // // Extract the piece from the pieceData object
   const pieceData = useSelector((state) => state.squares[props.id])

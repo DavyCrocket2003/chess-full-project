@@ -1,9 +1,15 @@
 const initialState = {
-    'pieceStyle': 'new',      // 'old' or 'new'
-    'blackColor': '#583927',    // '#2E6F1E', // '#583927',
-    'whiteColor': 'white',  //'#EAC796', //'#56A62E',    // '#5f9ea0',    // 
-    'dragOrigin': {square: null, piece: '', moves: []},
-    'onBottom': 'white',
+    userSession: {
+        username: '',
+        password: '',
+        userId: null
+    },
+    isConnected: false,
+    pieceStyle: 'new',      // 'old' or 'new'
+    blackColor: '#583927',    // '#2E6F1E', // '#583927',
+    whiteColor: '#EAC796', //'#56A62E',    // '#5f9ea0',    // 
+    dragOrigin: {square: null, piece: '', moves: []},
+    onBottom: 'white',
     squares: {
     '11': {piece: 'R', moves: []},
     '12': {piece: 'N', moves: ['31','33']},
@@ -78,16 +84,22 @@ export default function reducer(state = initialState, action) {
     switch (action.type) {
         case "UPDATE_STATE":
             return action.payload
+
         case "UPDATE_BOARD":
-            let newState = {...state}
-            for (let square in action.payload) {
-                newState.squares[square] = action.payload[square]
-            }
-            return newState
+            return {...state, squares: {...state.squares, ...action.payload}}
+            
         case "GRAB_PIECE":
             return {...state, dragOrigin: action.payload}
+
         case "DROP_PIECE":
             return {...state, dragOrigin: {square: null, piece: ''}}
+
+        case "CONNECTION":
+            return {...state, isConnected: payload}
+        
+        case "UPDATE_USER_SESSION":
+            return {...state, userSession: {...state.userSession, ...action.payload}}
+
         default:
             return state
     }
