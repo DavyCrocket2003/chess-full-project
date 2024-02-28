@@ -2,11 +2,14 @@ import {User} from '../database/model.js'
 
 export const handlerFunctions = {
     login: async (req, res) => {
-        const {username, password} = req.body
-
+        const {usernameInput, passwordInput} = req.body
+        if (!usernameInput) {
+            res.send({message: 'username undefined', success: false})
+            return
+        }
         const user = await User.findOne({
             where: {
-                username: username
+                username: usernameInput
             }
         })
         if (!user) {
@@ -18,7 +21,7 @@ export const handlerFunctions = {
         }
         
 
-        if (user.password !== password) {
+        if (user.password !== passwordInput) {
             res.send({
                 message: 'password does not match',
                 success: false,
@@ -27,6 +30,7 @@ export const handlerFunctions = {
         }
 
         req.session.userId = user.userId
+        req.session.username = usernameInput
 
         res.send({
             message: "user logged in",
@@ -41,7 +45,8 @@ export const handlerFunctions = {
             res.send({
                 message: "The user is still logged in",
                 success: true,
-                userId: req.session.userId
+                userId: req.session.userId,
+                username: req.session.username,
             })
             return
         } else {

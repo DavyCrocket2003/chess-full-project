@@ -145,6 +145,32 @@ export class Message extends Model {
       modelName: 'message'
     }
   )
+export class Seek extends Model {
+    [util.inspect.custom]() {
+      return this.toJSON()
+    }
+  }
+  Seek.init(
+    {
+      seekId: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
+      subject: {
+        type: DataTypes.STRING
+      },
+      body: {
+        type: DataTypes.TEXT
+      },
+    },
+    {
+      sequelize: db,
+      modelName: 'message'
+    }
+  )
+
+
 
 
 

@@ -8,6 +8,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { updateUserSession } from './sessionActions';
+import handlerFunctions from './clientController';
+import Login from './pages/Login';
 
 
 
@@ -16,12 +18,12 @@ export default function App() {
 
 
 
-  const userSession = useSelector((state) => state.session)
+  const userSession = useSelector((state) => state.userSession)
   const dispatch = useDispatch()
   const sessionCheck = async () => {
     const res = await axios.get('/session-check')
     if (res.data.success) {
-      dispatch(updateUserSession({userId: res.data.userId}))
+      dispatch(updateUserSession({userId: res.data.userId, username: res.data.username}))
     }
   }
 
@@ -35,28 +37,31 @@ export default function App() {
     <>
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand as={Link} to="/">React-Bootstrap</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/"><img
+            src="./chess.jpg" alt="Chess icon" width="30" height="30" className="d-inline-block align-top"/></Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">Home</Nav.Link>
             <Nav.Link as={Link} to="/live">Live Chess</Nav.Link>
-            <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+            <Nav.Link as={Link} to="/computer">Computer Chess</Nav.Link>
+            <Nav.Link as={Link} to="/correspondence">Correspondence Chess</Nav.Link>
+            <Nav.Link as={Link} to="/messages">Messages</Nav.Link>
+            <NavDropdown title={userSession.userId ? userSession.username : "User Menu"} id="basic-nav-dropdown">
+              <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/friends">Friends</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/settings">Settings</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">
-                Separated link
-              </NavDropdown.Item>
+              {userSession?.userId ? (
+              <NavDropdown.Item onClick={(e) => handlerFunctions.handleLogout(e, dispatch)}>Logout</NavDropdown.Item>
+              ) : (
+              <NavDropdown.Item as={Link} to="/">Login</NavDropdown.Item>
+              )}
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
-    <Outlet />
+    {userSession.userId ? (<Outlet />) : (<Login />)}
     </>
   )
 }

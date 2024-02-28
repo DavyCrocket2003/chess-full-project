@@ -3,3 +3,8 @@ export const updateUserSession = (sessionObj) => ({
     payload: sessionObj
 
 })
+export const updateSocketSession = (sessionObj) => ({
+    type: 'UPDATE_SOCKET_SESSION',
+    payload: sessionObj
+
+})

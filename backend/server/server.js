@@ -6,13 +6,18 @@ import ViteExpress from "vite-express"
 import http from "http"
 import { Server } from "socket.io"
 import { handlerFunctions } from "./controller.js"
+import cors from "cors"
+
 
 const port = 8800
 
 const app = express()
 
 
-
+app.use(cors({
+  origin: 'http://localhost:4000', // Allow requests from this origin
+  credentials: true // Allow cookies to be sent back and forth
+}))
 app.use(morgan("dev"))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static("src"))

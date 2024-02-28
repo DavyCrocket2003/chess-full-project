@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { DndContext } from '@dnd-kit/core';
 import './ChessBoard.css';
-import Square from '../components/Square';
-import Piece from '../components/Piece';
+import Square from './Square';
+import Piece from './Piece';
 import { useSelector, useDispatch } from 'react-redux';
 import {snapCenterToCursor} from '@dnd-kit/modifiers'
 
@@ -11,9 +11,10 @@ export default function ChessBoard(props) {
   const dragOrigin = useSelector((state) => state.dragOrigin)
   const onBottom = useSelector((state) => state.onBottom)
   const squares = useSelector((state) => state.squares)
-  // console.log(squares)
+
+  // generate key seed of strings '11' to '88' to make squares representing the board
   let squareKeys = []
-  // ternary used below to conditionally loop based on what player should be at the bottom
+  // ternary used below to conditionally change which player is 'onBottom"
   for (let i = (onBottom==='white' ? 8 : 1); i!== (onBottom === 'white' ? 0 : 9); i += (onBottom === 'white' ? -1 : 1)) {
     for (let j = (onBottom==='white' ? 1 : 8); j!== (onBottom === 'white' ? 9 : 0); j += (onBottom === 'white' ? 1 : -1)) {
         squareKeys.push(`${i}${j}`)
@@ -21,8 +22,6 @@ export default function ChessBoard(props) {
   }
   const whiteColor = useSelector((state) => state.whiteColor)
   const blackColor = useSelector((state) => state.blackColor)
-  // let whiteColor = props.whiteColor ? props.whiteColor : 'white'
-  // let blackColor = props.blackColor ? props.blackColor : 'black'
   const dispatch = useDispatch()
 
   return (

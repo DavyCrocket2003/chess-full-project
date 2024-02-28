@@ -1,10 +1,12 @@
 const initialState = {
     userSession: {
-        username: '',
-        password: '',
-        userId: null
+        usernameInput: '',
+        passwordInput: '',
+        userId: null,
+        username: null,
+        gameId: null,
     },
-    isConnected: false,
+    socketSession: {connected: false},
     pieceStyle: 'new',      // 'old' or 'new'
     blackColor: '#583927',    // '#2E6F1E', // '#583927',
     whiteColor: '#EAC796', //'#56A62E',    // '#5f9ea0',    // 
@@ -75,7 +77,7 @@ const initialState = {
     '86': {piece: 'b', moves: []},
     '87': {piece: 'n', moves: ['66','68']},
     '88': {piece: 'r', moves: []}
-    }
+    },
     
 }
 
