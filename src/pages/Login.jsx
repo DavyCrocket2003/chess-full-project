@@ -1,7 +1,7 @@
 
 import {useSelector, useDispatch} from "react-redux"
 import axios from "axios"
-import handlerFunctions from "../clientController"
+import handlerFunctions from "../controllers/clientController"
 
 function Login() {
 

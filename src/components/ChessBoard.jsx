@@ -10,13 +10,15 @@ export default function ChessBoard(props) {
   console.log('ChessBoard Rendered')
   const dragOrigin = useSelector((state) => state.dragOrigin)
   const onBottom = useSelector((state) => state.onBottom)
-  const squares = useSelector((state) => state.squares)
+  const gameState = useSelector((state) => state.gameState)
+  const userId = useSelector((state) => state.userSession.userId)
 
   // generate key seed of strings '11' to '88' to make squares representing the board
   let squareKeys = []
-  // ternary used below to conditionally change which player is 'onBottom"
-  for (let i = (onBottom==='white' ? 8 : 1); i!== (onBottom === 'white' ? 0 : 9); i += (onBottom === 'white' ? -1 : 1)) {
-    for (let j = (onBottom==='white' ? 1 : 8); j!== (onBottom === 'white' ? 9 : 0); j += (onBottom === 'white' ? 1 : -1)) {
+  // ternary used below to conditionally render which player is 'onBottom"
+  const whiteOnBottom = (onBottom === 'regular' && gameState.player1===userId) || (!onBottom === 'regular' && !gameState.player1===userId)
+  for (let i = (whiteOnBottom ? 8 : 1); i!== (whiteOnBottom ? 0 : 9); i += (onBottom === 'white' ? -1 : 1)) {
+    for (let j = (whiteOnBottom ? 1 : 8); j!== (whiteOnBottom ? 9 : 0); j += (onBottom === 'white' ? 1 : -1)) {
         squareKeys.push(`${i}${j}`)
     }
   }

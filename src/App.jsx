@@ -7,8 +7,8 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { updateUserSession } from './sessionActions';
-import handlerFunctions from './clientController';
+import { updateUserSession } from './controllers/sessionActions';
+import handlerFunctions from './controllers/clientController';
 import Login from './pages/Login';
 
 

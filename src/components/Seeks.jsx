@@ -1,6 +1,13 @@
 import React from 'react'
+import { socket } from '../socket'
 
 function Seeks(props) {
+
+
+  function handleClick(e) {
+    socket.emit('button_press')
+  }
+  
 
     let gameRows = props.games.map((game, index) => (
         <tr key={index}>
@@ -18,7 +25,7 @@ function Seeks(props) {
     <table>
       <tbody>
         <tr>
-          <td colSpan={5}><button>New Game</button></td>
+          <td colSpan={5}><button onClick={handleClick}>New Game</button></td>
         </tr>
         <tr>
           <td></td>

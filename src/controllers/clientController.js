@@ -10,13 +10,13 @@ const handlerFunctions = {
         const reqObj = {usernameInput, passwordInput}
         const res = await axios.post('/login', reqObj)
         if (res.data.success) {
-        dispatch(updateUserSession({userId: res.data.userId, username: usernameInput, usernameInput: '', passwordInput: ''}))
+        dispatch(updateUserSession({userId: res.data.userId, username: usernameInput, usernameInput: '', passwordInput: '', status: 'loggedIn'}))
         }
     },
     handleLogout: async (_, dispatch) => {
         const res = await axios.get('/logout')
         if (res.data.success) {
-            dispatch(updateUserSession({userId: null}))
+            dispatch(updateUserSession({userId: null, status: 'loggedOut'}))
         }
     }
 }

@@ -1,6 +1,7 @@
 import { io } from 'socket.io-client';
 
-// "undefined" means the URL will be computed from the `window.location` object
-const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:8800';
+// Replace 'http://localhost:8800' with your server URL
+const URL = 'http://localhost:8800';
 
+// Connect to the '/games' namespace on the server
 export const socket = io(URL);

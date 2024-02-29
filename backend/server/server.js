@@ -7,6 +7,7 @@ import http from "http"
 import { Server } from "socket.io"
 import { handlerFunctions } from "./controller.js"
 import cors from "cors"
+import { gameHandlers } from "./gameHandlers.js"
 
 
 const port = 8800
@@ -28,22 +29,15 @@ const sessionMiddleware = session({
   saveUninitialized: false,
   resave: false,
 })
-app.use(sessionMiddleware)
 
+app.use(sessionMiddleware)
 const httpServer = http.createServer(app)
 const io = new Server(httpServer)
-
 io.engine.use(sessionMiddleware)
 
 
 
-io.on('connection', (socket) => {
-  console.log(`${socket.id} user connected`)
-  const session = socket.request.session
-  socket.on('disconnect', () => {
-    console.log('user disconnected')
-  })
-})
+io.on('connection', (socket) => gameHandlers.handleConnect(socket))
 
 
 
