@@ -7,7 +7,7 @@ const socketHandlers = {
     emitGetSeeks: (dispatch) => {
         socket.emit('getSeeks', (res) => {
             if (res.success) {
-                dispatch({type: "UPDATE_SEEKS", payload: res.seeks})
+                dispatch({type: "UPDATE_SEEKS", payload: res.data})
             }
         })
     },
@@ -44,14 +44,13 @@ const socketHandlers = {
     },
 
     // accept draw
-    emitAcceptDraw: () => {
-        socket.emit('AcceptDraw')
-    },
+    // handled by handleDrawOffer
 
     // claim draw 3 fold repetition
-    emitClaimRepetitionDraw: () => {
-        socket.emit('claimRepetitionDraw')
-    },
+    // currently handled by handleDrawOffer
+    // emitClaimRepetitionDraw: () => {
+    //     socket.emit('claimRepetitionDraw')
+    // },
 
     // send message
     emitMessage: (message) => {
@@ -77,7 +76,7 @@ const socketHandlers = {
 
     },
     
-    // handle new sent from server
+    // handle new seek sent from server
 
     // handle a seek being removed
 
@@ -99,11 +98,19 @@ const socketHandlers = {
         }
         alert(resultMessage)
         dispatch(updateUserSession({status: 'seeking'}))
-    }
+    },
 
     // handle draw offer (from other player)
+    handleDrawOffer: () => {
+        let response = ''
+        while (!(response === 'Y' || response === 'N')) {
+            response = prompt('Would you like to accept a draw? Y or N')[0].toUpperCase()
+        }
+        socket.emit('acceptDraw')
+    }
 
     // handle 3 fold offer (from server)
+    // for now just using the same handler as draw offer
 
     
 }
