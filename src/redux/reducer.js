@@ -81,13 +81,14 @@ const initialState = {
             '87': {piece: 'n', moves: ['66','68']},
             '88': {piece: 'r', moves: []}
         },
-        player1: null,
-        player2: null,
+        player1Id: null,
+        player2Id: null,
         player1Time: null,
         player2Time: null,
         turn: 'white',
         gameId: null,
         gameName: '',
+        gameOn: false,
 
     },
     clickCount: 0

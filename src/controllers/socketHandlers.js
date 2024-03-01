@@ -12,8 +12,8 @@ const socketHandlers = {
         })
     },
     // seek creation
-    emitSeek: (dispatch) => {
-        socket.emit('newSeek', (res) => {
+    emitSeek: (dispatch, data) => {
+        socket.emit('newSeek', data, (res) => {
             if (res.success) {
                 dispatch(updateUserSession({status: 'seeking'}))
         }})
@@ -26,6 +26,11 @@ const socketHandlers = {
                 dispatch(updateUserSession({status: 'loggedIn'}))
             }
         })
+    },
+
+    // accept seek
+    emitAcceptSeek: (userId) => {
+        socket.emit('acceptSeek', userId, )
     },
 
     // put move
