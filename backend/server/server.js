@@ -37,7 +37,7 @@ io.engine.use(sessionMiddleware)
 
 
 
-io.on('connection', (socket) => gameHandlers.handleConnect(socket))
+io.on('connection', (socket) => gameHandlers.handleConnect(socket, io))
 
 
 

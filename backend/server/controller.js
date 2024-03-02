@@ -48,14 +48,14 @@ export const handlerFunctions = {
                 userId: req.session.userId,
                 username: req.session.username,
             })
-            return
         } else {
             res.send({
                 message: "No user logged in",
                 success: false,
             })
-            return
         }
+        console.log(req.session)
+        return
     },
 
     logout: async (req,res) => {
