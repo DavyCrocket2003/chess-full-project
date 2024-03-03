@@ -4,8 +4,8 @@ const initialState = {
         passwordInput: '',
         userId: null,
         username: null,
-        gameId: null,
         status: 'loggedOut',
+        socketId: null,
     },
     socketSession: {connected: false},
     seeks: [],
@@ -88,7 +88,7 @@ const initialState = {
         turn: 'white',
         gameId: null,
         gameName: '',
-        gameOn: false,
+        status: null,
 
     },
     clickCount: 0
@@ -101,7 +101,7 @@ export default function reducer(state = initialState, action) {
         case "UPDATE_STATE":
             return action.payload
 
-        case "UPDATE_BOARD":
+        case "UPDATE_BOARD":    // deprecated use "UPDATE_GAME" instead \\ On second thought, I'm not so sure
             return {...state, gameState: {...state.gameState, squares: {...state.gameState.squares, ...action.payload}}}
             
         case "GRAB_PIECE":
@@ -120,7 +120,11 @@ export default function reducer(state = initialState, action) {
             return {...state, clickCount: action.payload}
 
         case "UPDATE_SEEKS":
-            return {...state, seeks: action.payload}
+            if (Array.isArray(action.payload)){
+                return {...state, seeks: action.payload}
+            } else {
+                return {...state, seeks: JSON.parse(JSON.stringify(state.seeks)).push(action.payload)}
+            }
 
         case "UPDATE_GAME":
             return {...state, gameState: {...state.gameState, ...action.payload}}

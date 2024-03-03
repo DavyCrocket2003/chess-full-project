@@ -24,7 +24,7 @@ export default function App() {
     const res = await axios.get('/session-check')
     console.log(res.data)
     if (res.data.success) {
-      dispatch(updateUserSession({userId: res.data.userId, username: res.data.username}))
+      dispatch(updateUserSession(res.data))
     }
   }
 

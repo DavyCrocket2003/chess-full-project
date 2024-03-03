@@ -7,7 +7,7 @@ import http from "http"
 import { Server } from "socket.io"
 import { handlerFunctions } from "./controller.js"
 import cors from "cors"
-import { gameHandlers } from "./gameHandlers.js"
+import { handleConnect } from "./gameHandlers.js"
 
 
 const port = 8800
@@ -37,7 +37,7 @@ io.engine.use(sessionMiddleware)
 
 
 
-io.on('connection', (socket) => gameHandlers.handleConnect(socket, io))
+io.on('connection', (socket) => handleConnect(socket, io))
 
 
 

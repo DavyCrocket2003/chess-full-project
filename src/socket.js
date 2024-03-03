@@ -4,4 +4,4 @@ import { io } from 'socket.io-client';
 const URL = 'http://localhost:8800';
 
 // Connect to the '/games' namespace on the server
-export const socket = io(URL);
+export const socket = io(URL, {autoConnect: false});

@@ -7,7 +7,7 @@ function Square(props) {
   const {isOver, setNodeRef} = useDroppable({id: props.id})
 
   // // Extract the piece from the pieceData object
-  const pieceData = useSelector((state) => state.squares[props.id])
+  const pieceData = useSelector((state) => state.gameState.squares[props.id])
   const dragOrigin = useSelector((state) => state.dragOrigin)
   const myPiece = pieceData ? pieceData.piece : null;
     

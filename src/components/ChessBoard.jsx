@@ -8,7 +8,6 @@ import {snapCenterToCursor} from '@dnd-kit/modifiers'
 import { socketHandlers } from '../controllers/socketHandlers';
 
 export default function ChessBoard(props) {
-  console.log('ChessBoard Rendered')
   const dragOrigin = useSelector((state) => state.dragOrigin)
   const dragColor = dragOrigin.piece === dragOrigin.piece.toUpperCase() ? 'white' : 'black'
   const onBottom = useSelector((state) => state.onBottom)
@@ -46,8 +45,8 @@ export default function ChessBoard(props) {
   function handleDragEnd(event) {
     const { active, over } = event
     if (over && gameState.turn===playerColor && playerColor===dragColor && squares[dragOrigin.square].moves.includes(over.id)) {
-      // emit move to server
-      socketHandlers.emitMove({origin: dragOrigin.square, target: over.id})
+      // emit move to server  Will need to implement promotions here
+      props.emitters.move({origin: dragOrigin.square, target: over.id})
       // update local game board
       dispatch({
         type: "UPDATE_BOARD",

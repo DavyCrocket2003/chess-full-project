@@ -1,4 +1,5 @@
 import {User} from '../database/model.js'
+import { users as socketUsers } from './gameHandlers.js'
 
 export const handlerFunctions = {
     login: async (req, res) => {
@@ -28,26 +29,38 @@ export const handlerFunctions = {
             })
             return
         }
-
+        let userSession = {
+        userId: user.userId,
+        username: usernameInput,
+        status: 'loggedIn'
+        }
         req.session.userId = user.userId
         req.session.username = usernameInput
+        req.session.status = 'loggedIn'
+        socketUsers[user.userId] = {...socketUsers[user.userId], ...userSession}
 
         res.send({
             message: "user logged in",
             success: true,
-            userId: req.session.userId
+            ...userSession
         })
 
     },
 
     sessionCheck: async (req, res) => {
         if (req.session.userId) {
-            res.send({
+            let response = {
                 message: "The user is still logged in",
                 success: true,
                 userId: req.session.userId,
                 username: req.session.username,
-            })
+                status: 'loggedIn'
+            }
+            let socketUser = socketUsers[response.userId]
+            if (socketUser) {
+                response = {...response, ...socketUser}
+            }
+            res.send(response)
         } else {
             res.send({
                 message: "No user logged in",
@@ -59,6 +72,9 @@ export const handlerFunctions = {
     },
 
     logout: async (req,res) => {
+        // remove from session
+        // and remove from socketio data
+        delete socketUsers[req.session.userId]
         req.session.destroy()
 
         res.send({

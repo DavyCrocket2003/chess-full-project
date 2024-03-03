@@ -15,7 +15,6 @@ export const socketHandlers = {
     // seek creation
     emitSeek: (dispatch, data) => {
         console.log('emitSeek called')
-        console.log('emitSeek called')
         socket.emit('newSeek', data, (res) => {
             if (res.success) {
                 dispatch(updateUserSession({status: 'seeking'}))
