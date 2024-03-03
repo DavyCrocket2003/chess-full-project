@@ -1,7 +1,7 @@
 
 
 function ChessGame(params) {
-    console.log('ChessGame called', params)
+    // console.log('ChessGame called', params)
     // params should include {gameId, gameName player1Id, player2Id, createdAt?, rated, timeControl}
     const {gameId, gameName, player1Id, player2Id, createdAt, rated, timeControl} = params
 
@@ -9,7 +9,7 @@ function ChessGame(params) {
 
     // function that returns piece color, 'white', 'black', 'blank', or 'false' (if piece is undefined)
     function getColor(piece) {
-        console.log('getColor called', 'piece', piece)
+        // console.log('getColor called', 'piece', piece)
         if (typeof piece === 'undefined') {
             return false
         }
@@ -19,7 +19,7 @@ function ChessGame(params) {
     // function that evaluates the board state and looks for game state triggers
     // For instance check, stalemate, and checkmate
     function evaluateState() {
-        console.log('evaluateState called')
+        // console.log('evaluateState called')
         let check = inCheck(gameState.pieces, gameState.turn)
         let checkmate = false
         let stalemate = false
@@ -43,27 +43,27 @@ function ChessGame(params) {
         }
         // Need to implement insufficient material
         // Need to implement repetition draws
-        console.log('evlauateState returning', {check, checkmate, stalemate,})
+        // console.log('evlauateState returning', {check, checkmate, stalemate,})
         return {check, checkmate, stalemate,}
     }
 
     // function that creates a string representation of a move
     // from currentFlags and currentStatus returns it
     function writeMove() {
-        console.log('writeMove called')
+        // console.log('writeMove called')
         if (currentFlags.OOO) {
-            console.log('writeMove returning OOO')
+            // console.log('writeMove returning OOO')
             return 'OOO'
         }
         if (currentFlags.OO) {
-            console.log('writeMove returning OO')
+            // console.log('writeMove returning OO')
             return 'OO'
         }
         let [y1, x1, y2, x2] = [gameState.lastMove.origin[0], gameState.lastMove.origin[1], gameState.lastMove.target[0], gameState.lastMove.target[1]]
         const xmap = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E', 6: 'F', 7: 'G', 8: 'H'}
 
         let result = xmap[x1] + y1 + (currentFlags.capture ? 'x' : '') + xmap[x2] + y2 + (currentStatus.checkmate ? '#' : (currentStatus.check ? '+' : '')) +  (currentFlags.enPassant ? 'ep' : '') + (currentStatus.stalemate ? '½-½' : '')
-        console.log('writeMove returning', result)
+        // console.log('writeMove returning', result)
         return result
     }
 
@@ -81,9 +81,9 @@ function ChessGame(params) {
 
     // function that returns an array of candidate moves for square
     function squareMoveCandidates(squaresObj, square, includePeaceful=true) {
-        console.log('squareMoveCandidates called', includePeaceful)
+        // console.log('squareMoveCandidates called', includePeaceful)
         if (squaresObj[square]==='') {
-            console.log('squareMoveCandidates returning []')
+            // console.log('squareMoveCandidates returning []')
             return []
         }
         let mySquaresObj = {...squaresObj}
@@ -94,18 +94,22 @@ function ChessGame(params) {
 
         // This function adds candidate moves for a piece that moves straight in a direction [dydx]
         function straightMoves(y, x, dy, dx) {
-            console.log('straightMoves called', y, x, dy, dx)
-            let next = mySquaresObj[`${y + dy}${x + dx}`]
-            let nextColor = getColor(next)
-            while (nextColor === 'blank') {
-                candidates.push(next)
-                y += dy
-                x += dx
-                next = mySquaresObj[`${y + dy}${x + dx}`]
-                nextColor = getColor(next)
+            // console.log('straightMoves called', y, x, dy, dx)
+            // look at the piece on the next square
+            let nextSquare = `${y+dy}${x+dx}`
+            let nextPiece = mySquaresObj[nextSquare]
+            while (nextPiece==='') {    // as long as the next square is blank keep going
+                candidates.push(nextSquare)
+                y += dy     // now move to the open square
+                x += dx     // and target the square after
+                nextSquare = `${y+dy}${x+dx}`
+                nextPiece = mySquaresObj[nextSquare]
             }
-            if (nextColor && nextColor !== color0) {
-                candidates.push(next)
+            // since the while condition did not trigger, we know the
+            // next square is not open and our path is blocked
+            // if the next square is an enemy piece, add to candidate moves
+            if (getColor(nextPiece)===(color0==='white'?'black':'white')) {
+                candidates.push(nextSquare)
             }
         }
 
@@ -253,13 +257,13 @@ function ChessGame(params) {
         }
 
         pieceMoves[mySquaresObj[square]]()
-        console.log('squareMoveCandidates returning', candidates)
+        // console.log('squareMoveCandidates returning', candidates)
         return candidates
     }
 
     // finds out if the king on the board with the given color is in check
     function inCheck(squaresObj, color) {
-        console.log('inCheck called')
+        // console.log('inCheck called')
         let mySquaresObj = {...squaresObj}
         // find the king of the color
         let targets = color==='white'?['U','K']:['u','k']
@@ -271,7 +275,7 @@ function ChessGame(params) {
             }
             if (targets.includes(squarePiece)) {
                 kingOn = square
-                console.log('King on', kingOn)
+                // console.log('King on', kingOn)
                 break
             }
         }
@@ -283,12 +287,12 @@ function ChessGame(params) {
                 continue
             } else {    // check the aggressive (flag to not includePeaceful) moves from the test square
                 if (squareMoveCandidates(mySquaresObj, square, false).includes(kingOn)) {
-                    console.log('inCheck returning true')
+                    // console.log('inCheck returning true')
                     return true // if the square can attack the king square return true to inCheck
                 }
             }
         }
-        console.log('inCheck returning false')
+        // console.log('inCheck returning false')
         return false
     }
 
@@ -297,7 +301,7 @@ function ChessGame(params) {
     // Also returns an object that flags for {capture, enPassant, promote, OOO, OO}
     // Note the promote flag will be '' or a letter 
     function movePieces(squaresObj, origin, target, p='q') {
-        console.log('movePieces called', 'origin', origin, 'target', target, p)
+        // console.log('movePieces called', 'origin', origin, 'target', target, p)
         let mySquaresObj = {...squaresObj}
         let piece = mySquaresObj[origin]
         let pieceColor = getColor(piece)
@@ -373,25 +377,25 @@ function ChessGame(params) {
             OO = true       // flag kingside castle
         }
         let result = {squares: mySquaresObj, flags: {capture, enPassant, promote, OOO, OO}}
-        console.log('movePieces returning')
+        // console.log('movePieces returning')
         return result
     }
 
     // function to check if candidate move is legal (must already follow the rules of piece movement)
     function isLegal(squaresObj, origin, target) {
-        console.log('isLegal called', 'origin', origin, 'target', target)
+        // console.log('isLegal called', 'origin', origin, 'target', target)
         let mySquaresObj = {...squaresObj}
         let color = getColor(mySquaresObj[origin])
         let testSquares = movePieces(mySquaresObj, origin, target).squares    // note, if there is a promotion, the type will not affect the legality
         let result = !inCheck(testSquares, color)
-        console.log('isLegal returning', result)
+        // console.log('isLegal returning', result)
         return result
     }
 
     // function to populate a board (with pieces on it) with legal moves to hand back to players
     // translates pieces into cosmetics (ie no unmoveds or en passnant special pieces)
     function exportMoves(squaresObj) {
-        console.log('exportMoves called', 'squaresObj', squaresObj)
+        // console.log('exportMoves called', 'squaresObj', squaresObj)
         let mySquaresObj = {...squaresObj}
         let result = {}
         for (let square in mySquaresObj) {
@@ -402,20 +406,20 @@ function ChessGame(params) {
                 moves: squareMoveCandidates(mySquaresObj, square).filter((candidateMove) => isLegal(mySquaresObj, square, candidateMove)),
             }
         }
-        console.log('exportMoves returning', result)
+        // console.log('exportMoves returning', result)
         return result
     }
 
     // function to compress a board state into a string representation
     function stateToString(squaresObj, turn) {
-        console.log('stateToString called', 'squaresObj', squaresObj, 'turn', turn)
+        // console.log('stateToString called', 'squaresObj', squaresObj, 'turn', turn)
         let result = turn==='white' ? 'T': 't'
         for (let i=1; i<9; i++) {
             for (let j=1; j<9; j++) {
                 result += squaresObj[`${i}${j}`] === '' ? '_' : squaresObj[`${i}${j}`]
             }
         }
-        console.log('stateToString returning', result)
+        // console.log('stateToString returning', result)
         return result
     }
 
@@ -600,7 +604,7 @@ function ChessGame(params) {
     
     return {
         getState: function() {
-            console.log('getState called')
+            // console.log('getState called')
             return {
                 squares: gameState.squares,
                 transcript: gameState.transcript,
@@ -613,7 +617,7 @@ function ChessGame(params) {
             }
         },
         postMove: function({origin, target, p}) {
-            console.log('postMove called', 'origin', origin, 'target', target, 'p', p)
+            // console.log('postMove called', 'origin', origin, 'target', target, 'p', p)
             let {squares, flags} = movePieces(gameState.pieces, origin, target, p)
             gameState.pieces = squares
             currentFlags = flags

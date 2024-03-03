@@ -18,7 +18,7 @@ export default function ChessBoard(props) {
   // generate key seed of strings '11' to '88' to make squares representing the board
   let squareKeys = []
   // ternary used below to conditionally render which player is 'onBottom"
-  const whiteOnBottom = (onBottom === 'regular' && gameState.player1===userId) || (!onBottom === 'regular' && !gameState.player1===userId)
+  const whiteOnBottom = true //(onBottom === 'regular' && gameState.player1===userId) || (!onBottom === 'regular' && !gameState.player1===userId)
   for (let i = (whiteOnBottom ? 8 : 1); i!== (whiteOnBottom ? 0 : 9); i += (onBottom === 'white' ? -1 : 1)) {
     for (let j = (whiteOnBottom ? 1 : 8); j!== (whiteOnBottom ? 9 : 0); j += (onBottom === 'white' ? 1 : -1)) {
         squareKeys.push(`${i}${j}`)
