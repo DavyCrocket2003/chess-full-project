@@ -24,7 +24,6 @@ function ChessGame(params) {
         let checkmate = false
         let stalemate = false
         let canMove = false
-        let gameOver
         for (let s in gameState.squares) {  // Search to see if current player has any legal moves
             if ((getColor(s.piece)===gameState.turn) && s.moves) {
                 canMove = true
@@ -35,20 +34,37 @@ function ChessGame(params) {
             if (check) {
                 checkmate = true
                 gameState.status = turn==='white' ? '1-0' : '0-1'
+                gameState.message = 'Game ended in checkmate'
             } else {
                 stalemate = true
                 gameState.status = '½-½'
+                gameState.message = 'Game drawn by stalemate'
             }
-            gameOver = true
         }
-        // Need to implement insufficient material
-        // Need to implement repetition draws
-        // console.log('evlauateState returning', {check, checkmate, stalemate,})
+
+        /// Count positions for repetition draws \\\
+        // Save time by only looking at states that match the turn of current turn
+        positionCount = 1
+        let historyLength = gameState.boardHistory.length
+        let currentPosition = gameState.boardHistory[historyLength - 1]
+        for (let i = gameState.turn==='white' ? 0 : 1; i<historyLength - 1; i+=2) {
+            positionCount += gameState.boardHistory[i]===currentPosition
+        }
+        if (positionCount===5) {
+            gameState.status = '½-½'
+            gameState.message = 'Game drawn by five-fold repetition'
+        }
+
+        // console.log('evaluateState returning', {check, checkmate, stalemate,})
         return {check, checkmate, stalemate,}
+
+
+        // Need to implement insufficient material
+
     }
 
     // function that creates a string representation of a move
-    // from currentFlags and currentStatus returns it
+    // from currentFlags and status then returns it
     function writeMove() {
         // console.log('writeMove called')
         if (currentFlags.OOO) {
@@ -62,7 +78,7 @@ function ChessGame(params) {
         let [y1, x1, y2, x2] = [gameState.lastMove.origin[0], gameState.lastMove.origin[1], gameState.lastMove.target[0], gameState.lastMove.target[1]]
         const xmap = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E', 6: 'F', 7: 'G', 8: 'H'}
 
-        let result = xmap[x1] + y1 + (currentFlags.capture ? 'x' : '') + xmap[x2] + y2 + (currentStatus.checkmate ? '#' : (currentStatus.check ? '+' : '')) +  (currentFlags.enPassant ? 'ep' : '') + (currentStatus.stalemate ? '½-½' : '')
+        let result = xmap[x1] + y1 + (currentFlags.capture ? 'x' : '') + xmap[x2] + y2 + (gameState.status === 'checkmate' ? '#' : (gameState.status === 'check' ? '+' : '')) +  (currentFlags.enPassant ? 'ep' : '') + (gameState.status === 'stalemate' ? '½-½' : '')
         // console.log('writeMove returning', result)
         return result
     }
@@ -411,7 +427,7 @@ function ChessGame(params) {
     }
 
     // function to compress a board state into a string representation
-    function stateToString(squaresObj, turn) {
+    function stateToString(squaresObj, turn=gameState.turn) {
         // console.log('stateToString called', 'squaresObj', squaresObj, 'turn', turn)
         let result = turn==='white' ? 'T': 't'
         for (let i=1; i<9; i++) {
@@ -586,19 +602,18 @@ function ChessGame(params) {
         }),
         transcript: [],
         boardHistory: ['TSNBQUBNSPPPPPPPP________________________________ppppppppsnbqkbns'],
-        repetitionCount: 1,
         player1Time: timeControl,
         player2Time: timeControl,
         lastMove: null,
+        positionCount: 1,
         turn: 'white',
         gameName: gameName ? gameName : '',
         status: 'normal',
+        message: null,
         gameId: gameId,
-        result: null,
 
     }
     let currentFlags = {capture: false, enPassant: false, promote: false, OOO: false, OO: false}
-    let currentStatus = {check: false, checkmate: false, stalemate: false}
     
 
     
@@ -606,14 +621,16 @@ function ChessGame(params) {
         getState: function() {
             // console.log('getState called')
             return {
-                squares: gameState.squares,
-                transcript: gameState.transcript,
-                status: gameState.status,
-                turn: gameState.turn,
-                player1Id,
-                player2Id,
-                player1Time: gameState.player1Time,
-                player2Time: gameState.player2Time,
+                squares: gameState.squares,         // pieces and available moves for each square
+                transcript: gameState.transcript,   // written record of moves as an array
+                status: gameState.status,           // 'normal', 'check', '1-0', '0-1', or '½-½'
+                turn: gameState.turn,               // 'white' or 'black'
+                message,                            // For conveying miscellaneous game info
+                positionCount,                      // How many times has current position arisen
+                player1Id,                          // Who is white
+                player2Id,                          // Who is black
+                player1Time: gameState.player1Time, // remaining time
+                player2Time: gameState.player2Time, // remaining time
             }
         },
         postMove: function({origin, target, p}) {
@@ -622,12 +639,11 @@ function ChessGame(params) {
             gameState.pieces = squares
             currentFlags = flags
             gameState.squares = exportMoves(gameState.pieces)
-            gameState.boardHistory.push(stateToString(gameState.pieces))
             gameState.lastMove = {origin, target}
-            currentStatus = evaluateState()
-            gameState.transcript.push(writeMove())
-            // toggle player turn
             gameState.turn = gameState.turn === 'white' ? 'black' : 'white'
+            gameState.boardHistory.push(stateToString(gameState.pieces))
+            status = evaluateState()
+            gameState.transcript.push(writeMove())
             return this.getState()
         }
     }

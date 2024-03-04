@@ -109,7 +109,18 @@ export function handleConnect(socket, io) {
     socket.on('move', (move, gameId) => {
         console.log(games, gameId)
         console.log(socket.rooms)
-        io.to(gameId).emit('gameUpdate', games[gameId].postMove(move))
+        let gameUpdate = games[gameId].postMove(move)
+        // Do things depending on game state
+        if (gameUpdate.positionCount>=3) {
+            // implement emit draw offer
+        }
+        // check if the game outcome has been resolved
+        if (['1-0', '0-1', '½-½'].includes(gameUpdate.status)) {
+            
+        }
+
+
+        io.to(gameId).emit('gameUpdate', gameUpdate)
     })
 
 
