@@ -14,20 +14,25 @@ export default function ChessBoard(props) {
   const gameState = useSelector((state) => state.gameState)
   const squares = gameState.squares
   const userId = useSelector((state) => state.userSession.userId)
-
-  // generate key seed of strings '11' to '88' to make squares representing the board
-  let squareKeys = []
-  // ternary used below to conditionally render which player is 'onBottom"
-  const whiteOnBottom = true //(onBottom === 'regular' && gameState.player1===userId) || (!onBottom === 'regular' && !gameState.player1===userId)
-  for (let i = (whiteOnBottom ? 8 : 1); i!== (whiteOnBottom ? 0 : 9); i += (onBottom === 'white' ? -1 : 1)) {
-    for (let j = (whiteOnBottom ? 1 : 8); j!== (whiteOnBottom ? 9 : 0); j += (onBottom === 'white' ? 1 : -1)) {
-        squareKeys.push(`${i}${j}`)
-    }
-  }
   const whiteColor = useSelector((state) => state.whiteColor)
   const blackColor = useSelector((state) => state.blackColor)
   const dispatch = useDispatch()
   const playerColor = gameState.player1Id === userId ? 'white' : 'black'
+  let whiteOnBottom = playerColor === 'white'
+  if (onBottom!=='regular') {
+    whiteOnBottom = !whiteOnBottom
+  }
+  
+
+  // generate key seed of strings '11' to '88' to make squares representing the board
+  let squareKeys = []
+  // ternary used below to conditionally render which player is 'onBottom"
+  for (let i = (whiteOnBottom ? 8 : 1); i!== (whiteOnBottom ? 0 : 9); i += (whiteOnBottom ? -1 : 1)) {
+    for (let j = (whiteOnBottom ? 1 : 8); j!== (whiteOnBottom ? 9 : 0); j += (whiteOnBottom ? 1 : -1)) {
+        squareKeys.push(`${i}${j}`)
+    }
+  }
+
 
   return (
     <DndContext modifiers={[snapCenterToCursor]} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>

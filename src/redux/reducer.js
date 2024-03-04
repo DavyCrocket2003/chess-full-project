@@ -10,7 +10,7 @@ const initialState = {
     socketSession: {connected: false},
     seeks: [],
     onBottom: 'regular',
-    pieceStyle: 'new',      // 'old' or 'new'
+    pieceStyle: 'old',      // 'old' or 'new'
     blackColor: '#583927',    // '#2E6F1E', // '#583927',
     whiteColor: '#EAC796', //'#56A62E',    // '#5f9ea0',    // 
     dragOrigin: {square: null, piece: '', moves: []},
