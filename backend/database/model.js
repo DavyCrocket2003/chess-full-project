@@ -90,6 +90,10 @@ Game.init(
       autoIncrement: true,
       primaryKey: true
     },
+    uuid: {
+      type: DataTypes.UUID,
+      unique: true,
+    },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
@@ -109,6 +113,10 @@ Game.init(
     rated: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    result: {
+      type: DataTypes.ENUM('1-0', '0-1', '½-½'), // Represents white win, black win, or draw.
+      allowNull: false,
     }
   },
   {
@@ -150,25 +158,7 @@ export class Seek extends Model {
       return this.toJSON()
     }
   }
-  Seek.init(
-    {
-      seekId: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-      },
-      subject: {
-        type: DataTypes.STRING
-      },
-      body: {
-        type: DataTypes.TEXT
-      },
-    },
-    {
-      sequelize: db,
-      modelName: 'message'
-    }
-  )
+
 
 
 

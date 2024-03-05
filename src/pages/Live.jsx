@@ -58,6 +58,15 @@ function Live() {
       function handleGameUpdate(data) {
         console.log('handleGameUpdate triggered', 'data', data)
         dispatch({type: "UPDATE_GAME", payload: data})
+        // handle game over statuses
+        if (['1-0', '0-1', '½-½'].includes(data.status)) {
+          // alert that pops up at the end of the game
+          let alertMessage = data.message + player1Id===userId ? {'1-0': 'You won!', '0-1': `${data.player2Id} won`, '½-½': ''}[data.status] : {'0-1': 'You won!', '1-0': `${data.player2Id} won`, '½-½': ''}[data.status]
+          alert(alertMessage)
+
+          // do other game end things
+        }
+
       }
 
       // handle draw offer
@@ -98,6 +107,7 @@ function Live() {
       }
 
       socket.on('connectData', handleConnectData)
+      socket.on('newSeek', handleNewSeek)
       socket.on('cancelSeek', handleCancelSeek)
       socket.on('gameStart', handleGameStart)
       socket.on('gameUpdate', handleGameUpdate)

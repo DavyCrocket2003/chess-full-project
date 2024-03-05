@@ -5,7 +5,6 @@ import Square from './Square';
 import Piece from './Piece';
 import { useSelector, useDispatch } from 'react-redux';
 import {snapCenterToCursor} from '@dnd-kit/modifiers'
-import { socketHandlers } from '../controllers/socketHandlers';
 
 export default function ChessBoard(props) {
   const dragOrigin = useSelector((state) => state.dragOrigin)

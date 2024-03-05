@@ -1,6 +1,8 @@
 // This file handles all the events for creating and seeking games
 import { v4 as uuidv4 } from 'uuid'
 import ChessGame from './ChessGame.js'
+import {User, Game} from '../database/model.js'
+
 
 
 
@@ -86,7 +88,7 @@ export function handleConnect(socket, io) {
         users[ownerId].status = 'inGame'   // update gameId of the creator
 
         
-        console.log('creatorid', ownerId, 'acceptorid', userId)
+        console.log('creatorid', ownerId, 'acceptorid', userId, mySeek)
         let chooseTF = Math.random*2 > 1
         let gameData = {
             gameId,
@@ -106,17 +108,48 @@ export function handleConnect(socket, io) {
     })
 
     // Handle client making a move
-    socket.on('move', (move, gameId) => {
+    socket.on('move', async (move, gameId) => {
+        console.log('move event triggered', move)
         console.log(games, gameId)
         console.log(socket.rooms)
         let gameUpdate = games[gameId].postMove(move)
+        console.log('Game responded to move', gameUpdate)
         // Do things depending on game state
         if (gameUpdate.positionCount>=3) {
             // implement emit draw offer
         }
-        // check if the game outcome has been resolved
+        // check if the game outcome has been determined (meaning game is over)
         if (['1-0', '0-1', '½-½'].includes(gameUpdate.status)) {
-            
+            Game.create({
+                uuid: gameId,
+                moves: gameUpdate.MoveHistory,
+                player1Time: gameUpdate.player1Time,
+                player2Time: gameUpdate.player2Time,
+                timeControl: gameUpdate.timeControl,
+                rated: gameUpdate.rated,
+                result: gameUpdate.status,
+                player1: gameUpdate.player1Id,
+                player2: gameUpdate.player2Id,
+
+            })
+
+            // remove game from users' userId
+            users[gameUpdate.player1Id].gameId = null
+            users[gameUpdate.player2Id].gameId = null
+
+            // remove users' sockets from room
+            let socket1 = io.sockets.sockets.get(users[player1Id].socketId)
+            let socket2 = io.sockets.sockets.get(users[player1Id].socketId)
+            if (socket1) {
+                socket1.leave(gameId)
+            }
+            if (socket2) {
+                socket2.leave(gameId)
+            }
+
+            // delete game from socket users memory
+            delete games[gameId]
+            console.log('Game over')
         }
 
 
