@@ -19,26 +19,26 @@ function ChessGame(params) {
     // function that evaluates the board state and looks for game state triggers
     // For instance check, stalemate, and checkmate
     function evaluateState() {
-        console.log('evaluateState called', 'color', gameState.turn)
-        let check = inCheck(gameState.pieces, gameState.turn)
-        let checkmate = false
-        let stalemate = false
-        let canMove = false
+        // console.log('evaluateState called', 'color', gameState.turn)
+        currentFlags.check = inCheck(gameState.pieces, gameState.turn)
+        currentFlags.checkmate = false
+        currentFlags.stalemate = false
+        currentFlags.canMove = false
         for (let s in gameState.squares) {  // Search to see if current player has any legal moves
             if (gameState.squares[s].piece && getColor(gameState.squares[s].piece)===gameState.turn && gameState.squares[s].moves.length>0) {
-                canMove = true
+                currentFlags.canMove = true
                 break
             }
         }
-        if (!canMove) {
-            if (check) {
-                checkmate = true
-                gameState.status = gameState.turn==='white' ? '1-0' : '0-1'
-                gameState.message = 'Game ended in checkmate'
+        if (!currentFlags.canMove) {
+            if (currentFlags.check) {
+                currentFlags.checkmate = true
+                gameState.status = gameState.turn==='white' ? '0-1' : '1-0' // I have the colors mixed up for some reason. So I just jury rigged it
+                gameState.message = 'Game ended in checkmate. '
             } else {
-                stalemate = true
+                currentFlags.stalemate = true
                 gameState.status = '½-½'
-                gameState.message = 'Game drawn by stalemate'
+                gameState.message = 'Game drawn by stalemate. '
             }
         }
 
@@ -55,7 +55,7 @@ function ChessGame(params) {
             gameState.message = 'Game drawn by five-fold repetition'
         }
 
-        console.log('evaluateState exiting')
+        // console.log('evaluateState exiting')
         return 
 
 
@@ -66,20 +66,21 @@ function ChessGame(params) {
     // function that creates a string representation of a move
     // from currentFlags and status then returns it
     function writeMove() {
-        console.log('writeMove called')
+        // console.log('writeMove called')
         if (currentFlags.OOO) {
-            console.log('writeMove returning OOO')
+            // console.log('writeMove returning OOO')
             return 'OOO'
         }
         if (currentFlags.OO) {
-            console.log('writeMove returning OO')
+            // console.log('writeMove returning OO')
             return 'OO'
         }
         let [y1, x1, y2, x2] = [gameState.lastMove.origin[0], gameState.lastMove.origin[1], gameState.lastMove.target[0], gameState.lastMove.target[1]]
         const xmap = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E', 6: 'F', 7: 'G', 8: 'H'}
 
-        let result = xmap[x1] + y1 + (currentFlags.capture ? 'x' : '') + xmap[x2] + y2 + (gameState.status === 'checkmate' ? '#' : (gameState.status === 'check' ? '+' : '')) +  (currentFlags.enPassant ? 'ep' : '') + (gameState.status === 'stalemate' ? '½-½' : '')
-        console.log('writeMove returning', result)
+        // console.log('status', gameState.status)
+        let result = xmap[x1] + y1 + (currentFlags.capture ? 'x' : '') + xmap[x2] + y2 + (currentFlags.checkmate ? '#' : (currentFlags.check ? '+' : '')) +  (currentFlags.enPassant ? 'ep' : '') + (currentFlags.stalemate ? '½-½' : '')
+        // console.log('writeMove returning', result)
         return result
     }
 
@@ -410,7 +411,7 @@ function ChessGame(params) {
     // function to populate a board (with pieces on it) with legal moves to hand back to players
     // translates pieces into cosmetics (ie no unmoveds or en passnant special pieces)
     function exportMoves(squaresObj) {
-        console.log('exportMoves called')
+        // console.log('exportMoves called')
         let mySquaresObj = {...squaresObj}
         let result = {}
         for (let square in mySquaresObj) {
@@ -421,7 +422,7 @@ function ChessGame(params) {
                 moves: squareMoveCandidates(mySquaresObj, square).filter((candidateMove) => isLegal(mySquaresObj, square, candidateMove)),
             }
         }
-        console.log('exportMoves returning', result)
+        // console.log('exportMoves returning', result)
         return result
     }
 
@@ -615,7 +616,7 @@ function ChessGame(params) {
         gameId: gameId,
 
     }
-    let currentFlags = {capture: false, enPassant: false, promote: false, OOO: false, OO: false}
+    let currentFlags = {capture: false, enPassant: false, promote: false, OOO: false, OO: false, check: false, canMove: true, checkmate: false, stalemate: false}
     
 
     

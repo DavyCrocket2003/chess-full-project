@@ -71,6 +71,7 @@ export function handleConnect(socket, io) {
         resCallback({success: true, message: 'Your seek was cancelled'})
     })
 
+    // function refreshSocketSession(userId) {}
     // Handle a user accepting a seek
     socket.on('acceptSeek', (ownerId) => {
         console.log('acceptSeek event triggered')
@@ -122,24 +123,52 @@ export function handleConnect(socket, io) {
         if (['1-0', '0-1', '½-½'].includes(gameUpdate.status)) {
             Game.create({
                 uuid: gameId,
-                moves: gameUpdate.MoveHistory,
+                moves: gameUpdate.moveHistory,
                 player1Time: gameUpdate.player1Time,
                 player2Time: gameUpdate.player2Time,
                 timeControl: gameUpdate.timeControl,
                 rated: gameUpdate.rated,
                 result: gameUpdate.status,
-                player1: gameUpdate.player1Id,
-                player2: gameUpdate.player2Id,
+                player1Id: gameUpdate.player1Id,
+                player2Id: gameUpdate.player2Id,
 
             })
+            
+            // update player rankings
+            let winner = {'1-0': gameUpdate.player1Id, '½-½': gameUpdate.player2Id, '0-1': null}[gameUpdate.status]
+            User.findAll({where: {userId: [gameUpdate.player1Id, gameUpdate.player2Id]}, attributes: ['userId', 'publicRating', 'privateRating']})
+                .then(playerRecords => {
+                    if (playerRecords[0].userId!==gameUpdate.player1Id) {
+                        playerRecords = [playerRecords[1], playerRecords[0]]
+                    }       // players now sorted as [white, black]
+                    let privateDelta = calculateElo(playerRecords[0].privateRating, playerRecords[1].privateRating, gameUpdate.status)
+                    playerRecords[0].privateRating += privateDelta
+                    playerRecords[1].privateRating -= privateDelta
+                    if (gameUpdate.rated) {
+                        let publicDelta = calculateElo(playerRecords[0].publicRating, playerRecords[1].publicRating, gameUpdate.status)
+                        playerRecords[0].publicRating += publicDelta
+                        playerRecords[1].publicRating -= publicDelta
+                    }
+                    playerRecords[0].save()
+                    playerRecords[1].save()
+                    
+                    function calculateElo(r1, r2, outcome) {            // takes rating 1, rating 2, and who won
+                        let score1 = {'1-0':1, '½-½':0.5, '0-1': 0}[outcome]// and returns the delta for 1 (negate for 2)
+                        let expectedScore1 = 1/(1+10**((r2-r1)/400))
+                        let delta = 32*(score1-expectedScore1)
+                        return Math.round(delta)
+                    }
+                })
+
 
             // remove game from users' userId
             users[gameUpdate.player1Id].gameId = null
             users[gameUpdate.player2Id].gameId = null
 
             // remove users' sockets from room
-            let socket1 = io.sockets.sockets.get(users[player1Id].socketId)
-            let socket2 = io.sockets.sockets.get(users[player1Id].socketId)
+            let socket1 = io.sockets.sockets.get(users[gameUpdate.player1Id].socketId)
+            let socket2 = io.sockets.sockets.get(users[gameUpdate.player1Id].socketId)
+            io.to(gameId).emit('gameUpdate', gameUpdate)
             if (socket1) {
                 socket1.leave(gameId)
             }
@@ -147,13 +176,14 @@ export function handleConnect(socket, io) {
                 socket2.leave(gameId)
             }
 
-            // delete game from socket users memory
+            // delete game from users list
             delete games[gameId]
             console.log('Game over')
         }
 
-
-        io.to(gameId).emit('gameUpdate', gameUpdate)
+        if (gameUpdate.status==='normal'){
+            io.to(gameId).emit('gameUpdate', gameUpdate)
+        }
     })
 
 

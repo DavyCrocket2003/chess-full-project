@@ -1,4 +1,4 @@
-import {User} from '../database/model.js'
+import {User, Game} from '../database/model.js'
 import { users as socketUsers } from './gameHandlers.js'
 
 export const handlerFunctions = {
@@ -82,7 +82,43 @@ export const handlerFunctions = {
             success: true,
         })
         return
-    }
+    },
+
+    getUser: async (req, res) => {
+        console.log('getUser endpoint hit')
+        try {
+            const userData = await User.findByPk(req.params.userId)
+            res.send({message: "Here is the user data", userData})
+        } catch (error) {
+            console.error('An error occured', error)
+            res.send({message: 'an error occured', success: false})
+        }
+    },
+
+    putUser: async(req,res) => {
+        try {
+            await User.update({...req.body.data}, {where: {userId: req.body.userId}})
+            res.send({message: `user ${req.body.userId} updated successfully`, success: true})
+        } catch (error) {
+            console.error('An error occured', error)
+            res.send({message: 'an error occured', success: false})
+        }
+    },
+
+    putStatus: (req, res) => {
+        console.log('putStatus endpoint hit', req.params.userId, req.body.status)
+        socketUsers[req.params.userId] = req.body
+        res.send({message: `User ${req.params.userId} status set to ${req.body.status}`, success: true})
+    },
+
+    verifyPassword: async (req, res) => {
+        const myUser = await User.findByPk(req.body.userId)
+        if (myUser.password!==req.body.password || myUser.username!==req.body.username) {
+            res.send({success: false, message: 'Validation failed'})
+        } else {
+            res.send({success: true, message: 'Correct password'})
+        }
+    },
     
 }
 

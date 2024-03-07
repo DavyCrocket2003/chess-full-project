@@ -33,10 +33,21 @@ export default function App() {
     sessionCheck()
   }, [])
 
+  // function for taking a user away from a completed live game
+  function handleCompletedToLoggedIn() {
+    console.log('handleCompletedToLoggedIn called', userSession)
+    if (userSession.status === 'completed') {
+      dispatch(updateUserSession({status: 'loggedIn'}))
+      axios.put(`/status/${userSession.userId}`, {status: 'loggedIn'})
+    }
+  }
+
+
+
 
   return (
     <>
-    <Navbar expand="lg" className="bg-body-tertiary">
+    <Navbar expand="lg" className="bg-body-tertiary" onClick={handleCompletedToLoggedIn}>
       <Container>
         <Navbar.Brand as={Link} to="/"><img
             src="./chess.jpg" alt="Chess icon" width="30" height="30" className="d-inline-block align-top"/></Navbar.Brand>

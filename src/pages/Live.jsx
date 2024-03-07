@@ -5,15 +5,18 @@ import Seeks from '../components/Seeks'
 import { updateSocketSession } from '../controllers/sessionActions'
 import { updateUserSession } from '../controllers/sessionActions'
 import { io } from 'socket.io-client'
+import axios from 'axios'
+
 const URL = 'http://localhost:8800'
 const socket = io(URL, {autoConnect: false})
+
 
 
 function Live() {
 
     const {userId, username, status, socketId} = useSelector((state) => state.userSession)
     const clickCount = useSelector((state) => state.clickCount)
-    const gameId = useSelector((state) => state.gameState.gameId)
+    const {gameId, player1Id, player2Id} = useSelector((state) => state.gameState)
     const dispatch = useDispatch()
     
     const handleCountClick = () => {
@@ -39,7 +42,7 @@ function Live() {
       // handle seek emit
       function handleNewSeek(newSeek) {
         console.log('handleNewSeek triggered', 'newSeek', newSeek)
-        dispatch({type: 'ADD_SEEK', newSeek})
+        dispatch({type: 'UPDATE_SEEKS', payload: newSeek})
       }
 
       // handle seek cancel
@@ -61,8 +64,24 @@ function Live() {
         // handle game over statuses
         if (['1-0', '0-1', '½-½'].includes(data.status)) {
           // alert that pops up at the end of the game
-          let alertMessage = data.message + player1Id===userId ? {'1-0': 'You won!', '0-1': `${data.player2Id} won`, '½-½': ''}[data.status] : {'0-1': 'You won!', '1-0': `${data.player2Id} won`, '½-½': ''}[data.status]
-          alert(alertMessage)
+          console.log('message', data.message, 'userId', userId, 'player1Id', data.player1Id)
+          let messageInsert = ''
+          if (data.status === '1-0') {
+            if (data.player1Id === userId) {
+              messageInsert = 'You won!'
+            } else {
+              messageInsert = 'White won'
+            }
+          } else if (data.status === '0-1') {
+            if (Date.player2Id === userId) {
+              messageInsert = 'You won!'
+            } else {
+              messageInsert = 'Black won'
+            }
+          }
+          dispatch(updateUserSession({status: 'completed'}))
+          axios.put(`/status/${userId}`, {status: 'completed'})
+          alert(data.message + messageInsert)
 
           // do other game end things
         }
@@ -85,23 +104,6 @@ function Live() {
         console.log(message)
       }
 
-      // handle game end
-      function handleGameEnd(data) {
-        console.log('handleGameEnd called')
-        let resultMessage = ''
-        if (data.result==='draw') {
-            resultMessage = 'Draw'
-        } else if (data.result === player1Win) {
-            resultMessage = 'White Wins'
-        } else {
-            resultMessage = 'Black Wins'
-        }
-        alert(resultMessage)
-        dispatch(updateUserSession({status: 'seeking'}))
-      }
-
-
-
       function onDisconnect() {
         dispatch(updateSocketSession({connected: false}))
       }
@@ -113,7 +115,6 @@ function Live() {
       socket.on('gameUpdate', handleGameUpdate)
       socket.on('drawOffer', handleDrawOffer)
       socket.on('message', handleMessage)
-      socket.on('gameEnd', handleGameEnd)
       socket.on('disconnect', onDisconnect)
       
       // manually turn socket on
@@ -127,12 +128,20 @@ function Live() {
         socket.off('gameUpdate', handleGameUpdate)
         socket.off('drawOffer', handleDrawOffer)
         socket.off('message', handleMessage)
-        socket.off('gameEnd', handleGameEnd)
         socket.off('disconnect', onDisconnect)
       }
 
 
     }, [])
+
+    // Get user game settings
+    useEffect(() => {
+      axios.get(`/users/${userId}`)
+      .then((res) => {
+        console.log('res', res, 'res.data', res.data)
+        dispatch({type: 'UPDATE_STATE', payload: {pieceStyle: res.data.userData.pieceStyle, whiteColor: res.data.userData.whiteColor, blackColor: res.data.userData.blackColor}})
+      })
+    })
 
     // get socket information and seeks list
     useEffect(() => {
@@ -162,6 +171,16 @@ function Live() {
 
     }, [userId, username, status, socketId])
 
+    // Effect to handle cleanup when the component unmounts
+    useEffect(() => {
+      return () => {
+        // Dispatch action to update game status if the game is completed
+        if (status === 'completed') {
+          dispatch(updateUserSession({status: 'loggedIn'}))
+        }
+      }
+    }, [dispatch, userId, status]);
+
     // Define socket emitter functions to communicate with server
     const emitters = {
       // emit new seek
@@ -173,7 +192,7 @@ function Live() {
         dispatch(updateUserSession({status: 'seeking'}))
       },
 
-      // emmit a request to get seek list
+      // emit a request to get seek list
       getSeeks: () => {
         console.log('getSeeks called')
         socket.emit('getSeeks', (res) => {
@@ -228,11 +247,14 @@ function Live() {
 
 
 
+
+
   return (
     <>
-    <h3>userId {userId} username {username} gameId {gameId?gameId:null} status {status} socketId {socketId}</h3>
+    {/* <h3>userId {userId} username {username} gameId {gameId?gameId:null} status {status} socketId {socketId}</h3>
+    <h3>player1Id: {player1Id} player2Id: {player2Id}</h3> */}
     <p onClick={handleCountClick}>{clickCount} </p>
-    {status==='inGame' ? (
+    {(status==='inGame' || status==='completed') ? (
     <div>
       <ChessBoard emitters={emitters}/>
     </div>

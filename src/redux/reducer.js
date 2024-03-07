@@ -10,7 +10,7 @@ const initialState = {
     socketSession: {connected: false},
     seeks: [],
     onBottom: 'regular',
-    pieceStyle: 'old',      // 'old' or 'new'
+    pieceStyle: 'new',      // 'old' or 'new'
     blackColor: '#583927',    // '#2E6F1E', // '#583927',
     whiteColor: '#EAC796', //'#56A62E',    // '#5f9ea0',    // 
     dragOrigin: {square: null, piece: '', moves: []},
@@ -99,7 +99,7 @@ const initialState = {
 export default function reducer(state = initialState, action) {
     switch (action.type) {
         case "UPDATE_STATE":
-            return action.payload
+            return {...state, ...action.payload}
 
         case "UPDATE_BOARD":    // deprecated use "UPDATE_GAME" instead \\ On second thought, I'm not so sure
             return {...state, gameState: {...state.gameState, squares: {...state.gameState.squares, ...action.payload}}}
@@ -114,6 +114,7 @@ export default function reducer(state = initialState, action) {
             return {...state, isConnected: action.payload}
         
         case "UPDATE_USER_SESSION":
+            console.log('UPDATE_USER_SESSION being excecuted', action.payload)
             return {...state, userSession: {...state.userSession, ...action.payload}}
         
         case "UPDATE_CLICK_COUNT":
@@ -123,7 +124,7 @@ export default function reducer(state = initialState, action) {
             if (Array.isArray(action.payload)){
                 return {...state, seeks: action.payload}
             } else {
-                return {...state, seeks: JSON.parse(JSON.stringify(state.seeks)).push(action.payload)}
+                return {...state, seeks: [...state.seeks, action.payload]}
             }
 
         case "UPDATE_GAME":

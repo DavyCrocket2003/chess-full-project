@@ -44,10 +44,18 @@ io.on('connection', (socket) => handleConnect(socket, io))
 // Routes
 app.post('/login', handlerFunctions.login)
 
+// get user from DB
+app.get('/users/:userId', handlerFunctions.getUser)
+
+app.put('/users', handlerFunctions.putUser)
 
 app.get('/logout', handlerFunctions.logout)
 
 app.get('/session-check', handlerFunctions.sessionCheck)
+
+app.put('/status/:userId', handlerFunctions.putStatus)
+
+app.post('/verify', handlerFunctions.verifyPassword)
 
 
 

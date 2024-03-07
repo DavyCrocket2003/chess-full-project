@@ -47,6 +47,10 @@ User.init(
         type: DataTypes.STRING,
         defaultValue: '#583927',
     },
+    pieceStyle: {
+      type: DataTypes.ENUM('old', 'new'),
+      defaultValue: 'new'
+    },
     playSound: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
@@ -60,6 +64,7 @@ User.init(
     },
     photoURL: {
         type: DataTypes.STRING,
+        defaultValue: 'https://video-images.vice.com/articles/57c66daba81c526c72f78570/lede/homestar.gif'
     },
     country: {
         type: DataTypes.STRING,
@@ -67,7 +72,11 @@ User.init(
     birthYear: {
         type: DataTypes.INTEGER,
     },
-    rating: {
+    publicRating: {
+        type: DataTypes.INTEGER,
+        defaultValue: 1200,
+    },
+    privateRating: {
         type: DataTypes.INTEGER,
         defaultValue: 1200,
     }
@@ -117,6 +126,10 @@ Game.init(
     result: {
       type: DataTypes.ENUM('1-0', '0-1', '½-½'), // Represents white win, black win, or draw.
       allowNull: false,
+    },
+    player2Id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     }
   },
   {
@@ -147,17 +160,17 @@ export class Message extends Model {
       body: {
         type: DataTypes.TEXT
       },
+      recieverId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      }
     },
     {
       sequelize: db,
       modelName: 'message'
     }
   )
-export class Seek extends Model {
-    [util.inspect.custom]() {
-      return this.toJSON()
-    }
-  }
+
 
 
 
@@ -166,11 +179,10 @@ export class Seek extends Model {
 
 
 // Set up foreign keys
-User.hasMany(Game)
-Game.belongsTo(User, { as: 'player1' })
-Game.belongsTo(User, { as: 'player2' })
+User.hasMany(Game, { as: 'player1', foreignKey: 'player1Id'})
+User.hasMany(Game, { as: 'player2', foreignKey: 'player2Id'})
+Game.belongsTo(User)
 
 User.hasMany(Message)
-Message.belongsTo(User, { as: 'sender' })
-Message.belongsTo(User, { as: 'receiver' })
+Message.belongsTo(User)
 

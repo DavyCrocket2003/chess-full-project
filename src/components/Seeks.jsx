@@ -16,7 +16,7 @@ function Seeks({emitters}) {
   function handleClickNew() {
     let name = prompt('Game name: ')
     let timeControl = prompt('Time control: ')
-    let gameData = {name, time: timeControl, userId: userSession.userId}
+    let gameData = {name, time: timeControl, userId: userSession.userId, rated: true}
     emitters.seek(gameData)
   }
   
