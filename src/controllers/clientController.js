@@ -18,7 +18,7 @@ const handlerFunctions = {
         if (res.data.success) {
             dispatch(updateUserSession({userId: null, status: 'loggedOut'}))
         }
-    }
+    },
 }
 
 

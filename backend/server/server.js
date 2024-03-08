@@ -57,6 +57,10 @@ app.put('/status/:userId', handlerFunctions.putStatus)
 
 app.post('/verify', handlerFunctions.verifyPassword)
 
+app.post('/register', handlerFunctions.register)
+
+app.delete('/users/:userId', handlerFunctions.deleteUser)
+
 
 
 

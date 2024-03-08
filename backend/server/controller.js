@@ -1,5 +1,7 @@
 import {User, Game} from '../database/model.js'
+import {Op} from 'sequelize'
 import { users as socketUsers } from './gameHandlers.js'
+import { Sequelize } from 'sequelize'
 
 export const handlerFunctions = {
     login: async (req, res) => {
@@ -85,10 +87,10 @@ export const handlerFunctions = {
     },
 
     getUser: async (req, res) => {
-        console.log('getUser endpoint hit')
+        console.log('getUser endpoint hit',  req.params)
         try {
             const userData = await User.findByPk(req.params.userId)
-            res.send({message: "Here is the user data", userData})
+            res.send({message: "Here is the user data", userData, success: true})
         } catch (error) {
             console.error('An error occured', error)
             res.send({message: 'an error occured', success: false})
@@ -119,6 +121,46 @@ export const handlerFunctions = {
             res.send({success: true, message: 'Correct password'})
         }
     },
+
+    register: async (req, res) => {
+        const {username, password1, password2, email} = req.body
+        if (password1!==password2) {
+            res.send({message: 'Passwords do not match', success: false})
+            return
+        }
+        try {
+            const existingUser = await User.findOne({
+                where: {
+                    [Op.or]: [{username: username}, {email: email}]
+                }
+            })
+            if (existingUser) {
+                const message = `That ${existingUser.username===username ? 'username' : 'email'} is already in use`
+                res.send({message, success: false})
+            } else {
+                await User.create({username, password: password1, email})
+                res.send({message: 'Registration successful', success: true})
+            }
+            return
+        } catch (err) {
+            res.send({message: 'Error creating user', success: false})
+            throw err
+        }
+    },
+
+    deleteUser: async (req, res) => {
+        try {
+            console.log(req.params)
+            await User.destroy({
+                where: {userId: req.params.userId}
+            })
+            res.send({message: 'User account deleted', success: true})
+        } catch (err) {
+            res.send({message: 'Error deleting account', success: false})
+            throw(err)
+        }
+        return
+    }
     
 }
 

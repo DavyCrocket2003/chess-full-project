@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux'
-import { Dropdown } from 'bootstrap'
+import handlerFunctions from "../controllers/clientController"
 
 
 
@@ -29,8 +29,9 @@ function Profile() {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };
+  }
   
+  // useEffect that populates user data
   useEffect(() => {
     // Use useEffect to fetch data when the component mounts
     console.log(`Hit useEffect`)
@@ -54,6 +55,20 @@ function Profile() {
     let data = {...userData}
     axios.put('users', {userId, data})
     setEditMode(false)
+  }
+
+  const dispatch = useDispatch()
+  async function deleteAccount() {
+    let response = prompt("Are you sure you want to delete your account? Y or N")
+    if (response[0].toUpperCase() === 'Y') {
+      const res = await axios.delete(`/users/${userId}`)
+      if (res.data.success) {
+        alert('Account deleted')
+        handlerFunctions.handleLogout('', dispatch)
+      } else {
+        alert('Error deleting account')
+      }
+    }
   }
 
 
@@ -91,10 +106,6 @@ function Profile() {
             <td colSpan={2}>{!editMode ? <h4>{userData.bio}</h4> : <input type="text" value={userData.bio} onChange={(e) => dataListener('bio', e.target.value)} />}</td>
           </tr>
           <tr>
-            <td>Username:</td>
-            <td>{userData.username}</td>
-          </tr>
-          <tr>
             <td>Email:</td>
             <td>{!editMode ? userData.email : <input type="email" value={userData.email} onChange={(e) => dataListener('email', e.target.value)} />}</td>
           </tr>
@@ -103,16 +114,8 @@ function Profile() {
             <td>{!editMode ? '*'.repeat(userData.password.length) : <input type="password" value={userData.password} onChange={(e) => dataListener('password', e.target.value)} />}</td>
           </tr>
           <tr>
-            <td>White Squares Color:</td>
-            <td>{!editMode ? userData.whiteColor : <input type="text" value={userData.whiteColor} onChange={(e) => dataListener('whiteColor', e.target.value)} />}</td>
-          </tr>
-          <tr>
-            <td>Black Squares Color:</td>
-            <td>{!editMode ? userData.blackColor : <input type="text" value={userData.blackColor} onChange={(e) => dataListener('blackColor', e.target.value)} />}</td>
-          </tr>
-          <tr>
-            <td>Play Sound:</td>
-            <td>{!editMode ? userData.playSound ? 'Enabled' : 'Disabled' :   <select onChange={(e) => dataListener('status', e.target.value)}><option value={true}>Enabled</option><option value={false}>Disabled</option></select>}</td>
+            <td>Play Sounds:</td>
+            <td>{!editMode ? userData.playSound ? 'Enabled' : 'Disabled' :   <select onChange={(e) => dataListener('playSound', e.target.value)}><option value={true}>Enabled</option><option value={false}>Disabled</option></select>}</td>
           </tr>
           <tr>
             <td>Location:</td>
@@ -157,7 +160,10 @@ function Profile() {
                 <button onClick={() => setVerifyMode(!verifyMode)}>{!verifyMode ? 'Edit' : 'Cancel'}</button>
               </td>
             )} </> : ((
-              <td><button onClick={saveChanges}>Save Changes</button></td>
+              <>
+                <td><button onClick={saveChanges}>Save Changes</button></td>
+                <td><button onClick={deleteAccount}>Delete Account</button></td>
+              </>
             ))}
           </tr>
         </tfoot>

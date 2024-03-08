@@ -204,14 +204,46 @@ function ChessGame(params) {
             },
             'U': () => {    // white unmoved king
                 pieceMoves.K()  // include regular king moves
-                let canOOO = false  // hard coded values for castling queen side
+                if (!includePeaceful || inCheck(mySquaresObj, color0)) {    // if king is in check skip castling checks
+                    return
+                }
+                // function to test conditions for castling queen side
                 // If: (A) '11': 'V' && '15': 'U' (B) '12', '13', '14' are blank (C) '13', '14', '15' not attacked (D) includePeaceful, then:
-                if (canOOO) {
+                const canWhiteOOO = () => {
+                    if (!includePeaceful) {     // If only looking for check attacks, disregard castling
+                        return false
+                    }
+                    if (!mySquaresObj['11']==='V') {    // Requires an unmoved queenside rook
+                        return false
+                    }       // squares in between must be empty
+                    if (mySquaresObj['12'] || mySquaresObj['13'] || mySquaresObj['14']) {
+                        return false
+                    }       // A3 and A4 must not be in check (A5 checked before function call)
+                    if (inCheck({...mySquaresObj, '14':'K', '15':''}, color0) || inCheck({...mySquaresObj, '13': 'K', '15':''})) {
+                        return false
+                    }
+                    return true
+                }
+                if (canWhiteOOO()) {
                     candidates.push('13')
                 }
-                let canOO = false   // hard coded values for castling king side
                 // If: (A) '18': 'V' && '15': 'U' (B) '16', '17' are blank (C) '15', '16' '17' not attacked (D) includePeaceful, then:
-                if (canOO) {
+                const canWhiteOO = () => {
+                    if (!includePeaceful) {     // If only looking for check attacks, disregard castling
+                        return false
+                    }
+                    if (!mySquaresObj['18']==='V') {    // Requires an unmoved kingside rook
+                        return false
+                    }       // squares in between must be empty
+                    if (mySquaresObj['16'] || mySquaresObj['17']) {
+                        return false
+                    }       // A6 and A7 must not be in check (A5 checked before function call)
+                    if (inCheck({...mySquaresObj,'16':'K', '15': ''}, color0) || inCheck({...mySquaresObj, '17': 'K', '15':''})) {
+                        return false
+                    }
+                    return true
+                }
+                if (canWhiteOO()) {
                     candidates.push('17')
                 }
             },
@@ -258,15 +290,40 @@ function ChessGame(params) {
                 pieceMoves.K()
             },
             'u': () => {    // black unmoved king
-                pieceMoves.K()  // include regular king moves
-                let canOOO = false  // hard coded values for castling queen side
-                let canOO = false   // hard coded values for castling king side
-                // If: (A) '81': 'v' && '85': 'u' (B) '82', '83', '84' are blank (C) '83', '84', '85' not attacked, then:
-                if (canOOO) {
+                pieceMoves.K()
+                if (!includePeaceful || inCheck(mySquaresObj, color0)) {
+                    return      // if king is in check, or only looking for check testing, skip castling
+                }
+                // If: (A) '81': 'v' && '85': 'u' (B) '82', '83', '84' are blank (C) '83', '84', '85' not attacked (D) includePeaceful, then:
+                const canBlackOOO = () => {
+                    if (!mySquaresObj['81']==='v') {    // Requires an unmoved queenside rook
+                        return false
+                    }       // squares in between must be empty
+                    if (mySquaresObj['82'] || mySquaresObj['83'] || mySquaresObj['84']) {
+                        return false
+                    }       // C8 and D8 must not be in check (E8 checked before function call)
+                    if (inCheck({...mySquaresObj, '84':'k', '85':''}, color0) || inCheck({...mySquaresObj, '83': 'k', '15':''})) {
+                        return false
+                    }
+                    return true
+                }
+                if (canBlackOOO()) {
                     candidates.push('83')
                 }
-                // If: (A) '81': 'v' && '85': 'u' (B) '86', '87' are blank (C) '85', '86' '87' not attacked, then:
-                if (canOO) {
+                // If: (A) '88': 'v' && '85': 'u' (B) '86', '87' are blank (C) '85', '86' '87' not attacked (D) includePeaceful, then:
+                const canBlackOO = () => {
+                    if (!mySquaresObj['88']==='v') {    // Requires an unmoved kingside rook
+                        return false
+                    }       // squares in between must be empty
+                    if (mySquaresObj['86'] || mySquaresObj['87']) {
+                        return false
+                    }       // F8 and G8 must not be in check (E8 checked before function call)
+                    if (inCheck({...mySquaresObj,'86':'k', '85': ''}, color0) || inCheck({...mySquaresObj, '87': 'k', '85':''})) {
+                        return false
+                    }
+                    return true
+                }
+                if (canBlackOO()) {
                     candidates.push('87')
                 }
             }
@@ -384,12 +441,12 @@ function ChessGame(params) {
         // Castling
         if (['K','k'].includes(piece) && x1-x2 === 2) {     // Queen side castle
             mySquaresObj[`${y1}1`] = ''                       // <<--Move the rook from it's start position
-            mySquaresObj[`${y1}4`] = ((color === 'white') ? 'R' : 'r')  // <<--To the other side of the king
+            mySquaresObj[`${y1}4`] = ((pieceColor === 'white') ? 'R' : 'r')  // <<--To the other side of the king
             OOO = true      // flag Queenside castle
         }
         if (['K','k'].includes(piece) && x2-x1 === 2) {     // King side castle
             mySquaresObj[`${y1}8`] = ''                       // <<--Move the rook from it's start position
-            mySquaresObj[`${y1}6`] = ((color === 'white') ? 'R' : 'r')  // <<--To the other side of the king
+            mySquaresObj[`${y1}6`] = ((pieceColor === 'white') ? 'R' : 'r')  // <<--To the other side of the king
             OO = true       // flag kingside castle
         }
         let result = {squares: mySquaresObj, flags: {capture, enPassant, promote, OOO, OO}}

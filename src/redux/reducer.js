@@ -1,7 +1,5 @@
 const initialState = {
     userSession: {
-        usernameInput: '',
-        passwordInput: '',
         userId: null,
         username: null,
         status: 'loggedOut',
@@ -10,6 +8,7 @@ const initialState = {
     socketSession: {connected: false},
     seeks: [],
     onBottom: 'regular',
+    playSound: true,
     pieceStyle: 'new',      // 'old' or 'new'
     blackColor: '#583927',    // '#2E6F1E', // '#583927',
     whiteColor: '#EAC796', //'#56A62E',    // '#5f9ea0',    // 
@@ -91,7 +90,8 @@ const initialState = {
         status: null,
 
     },
-    clickCount: 0
+    clickCount: 0,
+    square11Ref: null,
     
 }
 
@@ -129,6 +129,9 @@ export default function reducer(state = initialState, action) {
 
         case "UPDATE_GAME":
             return {...state, gameState: {...state.gameState, ...action.payload}}
+
+        case "UPDATE_REF":
+            return {...state, square11Ref: action.payload}
 
         default:
             return state

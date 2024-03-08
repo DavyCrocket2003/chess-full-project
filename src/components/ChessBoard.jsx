@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DndContext } from '@dnd-kit/core';
 import './ChessBoard.css';
 import Square from './Square';
 import Piece from './Piece';
 import { useSelector, useDispatch } from 'react-redux';
 import {snapCenterToCursor} from '@dnd-kit/modifiers'
+import Label from './Label';
 
 export default function ChessBoard(props) {
   const dragOrigin = useSelector((state) => state.dragOrigin)
@@ -13,14 +14,26 @@ export default function ChessBoard(props) {
   const gameState = useSelector((state) => state.gameState)
   const squares = gameState.squares
   const userId = useSelector((state) => state.userSession.userId)
+  const opponent = gameState.player1Id===userId ? gameState.player2Id : gameState.player1Id
   const whiteColor = useSelector((state) => state.whiteColor)
   const blackColor = useSelector((state) => state.blackColor)
   const dispatch = useDispatch()
   const playerColor = gameState.player1Id === userId ? 'white' : 'black'
-  let whiteOnBottom = playerColor === 'white'
+  let whiteOnBottom = playerColor === 'white' // These couple of lines deal with board direction
   if (onBottom!=='regular') {
     whiteOnBottom = !whiteOnBottom
   }
+
+  // set a reference to the first square of the chess board
+  // used to style the player labels
+  const square11Ref = useRef(null)
+  useEffect(() => {
+    const square11 = document.getElementById('11')
+    if (square11) {
+      square11Ref.current = square11
+      // dispatch({type: "UPDATE_REF", payload: square11Ref})
+    }
+  })
   
 
   // generate key seed of strings '11' to '88' to make squares representing the board
@@ -34,15 +47,19 @@ export default function ChessBoard(props) {
 
 
   return (
-    <DndContext modifiers={[snapCenterToCursor]} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-      <div className="grid">
-      {squareKeys.map((key) => (
-        
-          <Square key={key} id={key} bc={(+key[0] + +key[1]) % 2 ? whiteColor : blackColor}/>
-        
-      ))}
-      </div>
-    </DndContext>
+    <div>
+      <Label userId={onBottom==="regular" ? opponent : userId} squareRef={square11Ref} />
+      <DndContext modifiers={[snapCenterToCursor]} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+        <div className="grid" >
+        {squareKeys.map((key) => (
+          
+            <Square key={key} id={key} bc={(+key[0] + +key[1]) % 2 ? whiteColor : blackColor}/>
+          
+        ))}
+        </div>
+      </DndContext>
+      <Label userId={onBottom==="regular" ? userId : opponent}/>
+    </div>
   );
 
   // function that updates the board state after a piece move

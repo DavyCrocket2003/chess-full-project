@@ -16,7 +16,8 @@ function Live() {
 
     const {userId, username, status, socketId} = useSelector((state) => state.userSession)
     const clickCount = useSelector((state) => state.clickCount)
-    const {gameId, player1Id, player2Id} = useSelector((state) => state.gameState)
+    const {gameId} = useSelector((state) => state.gameState)
+    const playSound = useSelector((state) => state.playSound)
     const dispatch = useDispatch()
     
     const handleCountClick = () => {
@@ -39,7 +40,7 @@ function Live() {
         resCallback({userId, username, status})
       }
       
-      // handle seek emit
+      // handle seek emit   CAN FIX IN REDUCER (to only add 1 time)
       function handleNewSeek(newSeek) {
         console.log('handleNewSeek triggered', 'newSeek', newSeek)
         dispatch({type: 'UPDATE_SEEKS', payload: newSeek})
@@ -61,11 +62,28 @@ function Live() {
       function handleGameUpdate(data) {
         console.log('handleGameUpdate triggered', 'data', data)
         dispatch({type: "UPDATE_GAME", payload: data})
+        console.log(playSound)
+        if (playSound) {
+          let lastMove = data.transcript[data.transcript.length-1]
+          if (lastMove.includes('+')) {
+            sound.check.play()
+          } else if (lastMove.includes('x')) {
+            sound.capture.play()
+          } else if (lastMove==='OOO'||lastMove==='OO') {
+            sound.castle.play()
+          } else {
+            sound.move.play() // Could implement move.play() vs opponent.play()
+          }
+        }
         // handle game over statuses
         if (['1-0', '0-1', '½-½'].includes(data.status)) {
+          if (playSound) {
+            sound.end.play()
+          }
           // alert that pops up at the end of the game
           console.log('message', data.message, 'userId', userId, 'player1Id', data.player1Id)
           let messageInsert = ''
+          console.log('userId', userId, 'player1Id', data.player1Id, 'player2Id', data.player2Id, 'status', data.status)
           if (data.status === '1-0') {
             if (data.player1Id === userId) {
               messageInsert = 'You won!'
@@ -139,7 +157,7 @@ function Live() {
       axios.get(`/users/${userId}`)
       .then((res) => {
         console.log('res', res, 'res.data', res.data)
-        dispatch({type: 'UPDATE_STATE', payload: {pieceStyle: res.data.userData.pieceStyle, whiteColor: res.data.userData.whiteColor, blackColor: res.data.userData.blackColor}})
+        dispatch({type: 'UPDATE_STATE', payload: {playSound: res.data.userData.playSound, pieceStyle: res.data.userData.pieceStyle, whiteColor: res.data.userData.whiteColor, blackColor: res.data.userData.blackColor}})
       })
     })
 
@@ -243,7 +261,15 @@ function Live() {
       }
     }
 
-
+    const sound = {   // Audio for game events
+      start: new Audio('../pieces/start.mp3'),
+      move: new Audio('../pieces/move.mp3'),
+      opponent: new Audio('../pieces/opponent.mp3'),
+      capture: new Audio('../pieces/capture.mp3'),
+      check: new Audio('../pieces/check.mp3'),
+      castle: new Audio('../pieces/castle.mp3'),
+      end: new Audio('../pieces/end.mp3'),
+    }
 
 
 
