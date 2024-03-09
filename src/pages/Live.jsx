@@ -21,12 +21,13 @@ function Live() {
     const dispatch = useDispatch()
     
     const handleCountClick = () => {
-      socket.emit('increment', 1, (count) => {
+      socket.emit('increment', 1, (count, users) => {
+        console.log(users)
         dispatch({type: "UPDATE_CLICK_COUNT", payload: count})
       })
     }
 
-    // Attatch socket listeners
+    // Attatch socket listeners and connect to socketserver
     useEffect(() => {
       // listen for errors
       socket.on('error', (error) => { console.error(error) })
@@ -54,7 +55,72 @@ function Live() {
       // handle game start
       function handleGameStart(data) {
         console.log('handleGameStart triggered', 'data', data)
-        dispatch({type: "UPDATE_GAME", payload: data})
+        dispatch({type: "UPDATE_GAME", payload: {...data, squares: {
+          '11': {piece: 'R', moves: []},
+          '12': {piece: 'N', moves: ['31','33']},
+          '13': {piece: 'B', moves: []},
+          '14': {piece: 'Q', moves: []},
+          '15': {piece: 'K', moves: []},
+          '16': {piece: 'B', moves: []},
+          '17': {piece: 'N', moves: ['36','38']},
+          '18': {piece: 'R', moves: []},
+          '21': {piece: 'P', moves: ['31','41']},
+          '22': {piece: 'P', moves: ['32','42']},
+          '23': {piece: 'P', moves: ['33','43']},
+          '24': {piece: 'P', moves: ['34','44']},
+          '25': {piece: 'P', moves: ['35','45']},
+          '26': {piece: 'P', moves: ['36','46']},
+          '27': {piece: 'P', moves: ['37','47']},
+          '28': {piece: 'P', moves: ['38','48']},
+          '31': {piece: '', moves: []},
+          '32': {piece: '', moves: []},
+          '33': {piece: '', moves: []},
+          '34': {piece: '', moves: []},
+          '35': {piece: '', moves: []},
+          '36': {piece: '', moves: []},
+          '37': {piece: '', moves: []},
+          '38': {piece: '', moves: []},
+          '41': {piece: '', moves: []},
+          '42': {piece: '', moves: []},
+          '43': {piece: '', moves: []},
+          '44': {piece: '', moves: []},
+          '45': {piece: '', moves: []},
+          '46': {piece: '', moves: []},
+          '47': {piece: '', moves: []},
+          '48': {piece: '', moves: []},
+          '51': {piece: '', moves: []},
+          '52': {piece: '', moves: []},
+          '35': {piece: '', moves: []},
+          '54': {piece: '', moves: []},
+          '55': {piece: '', moves: []},
+          '56': {piece: '', moves: []},
+          '57': {piece: '', moves: []},
+          '58': {piece: '', moves: []},
+          '61': {piece: '', moves: []},
+          '62': {piece: '', moves: []},
+          '63': {piece: '', moves: []},
+          '64': {piece: '', moves: []},
+          '65': {piece: '', moves: []},
+          '66': {piece: '', moves: []},
+          '67': {piece: '', moves: []},
+          '68': {piece: '', moves: []},
+          '71': {piece: 'p', moves: ['61','51']},
+          '72': {piece: 'p', moves: ['62','52']},
+          '73': {piece: 'p', moves: ['63','53']},
+          '74': {piece: 'p', moves: ['64','54']},
+          '75': {piece: 'p', moves: ['65','55']},
+          '76': {piece: 'p', moves: ['66','56']},
+          '77': {piece: 'p', moves: ['67','57']},
+          '78': {piece: 'p', moves: ['68','58']},
+          '81': {piece: 'r', moves: []},
+          '82': {piece: 'n', moves: ['61','63']},
+          '83': {piece: 'b', moves: []},
+          '84': {piece: 'q', moves: []},
+          '85': {piece: 'k', moves: []},
+          '86': {piece: 'b', moves: []},
+          '87': {piece: 'n', moves: ['66','68']},
+          '88': {piece: 'r', moves: []}
+      }}})
         dispatch(updateUserSession({status: 'inGame'}))
       }
 
@@ -83,7 +149,6 @@ function Live() {
           // alert that pops up at the end of the game
           console.log('message', data.message, 'userId', userId, 'player1Id', data.player1Id)
           let messageInsert = ''
-          console.log('userId', userId, 'player1Id', data.player1Id, 'player2Id', data.player2Id, 'status', data.status)
           if (data.status === '1-0') {
             if (data.player1Id === userId) {
               messageInsert = 'You won!'
@@ -91,7 +156,7 @@ function Live() {
               messageInsert = 'White won'
             }
           } else if (data.status === '0-1') {
-            if (Date.player2Id === userId) {
+            if (data.player2Id === userId) {
               messageInsert = 'You won!'
             } else {
               messageInsert = 'Black won'
@@ -147,6 +212,7 @@ function Live() {
         socket.off('drawOffer', handleDrawOffer)
         socket.off('message', handleMessage)
         socket.off('disconnect', onDisconnect)
+        dispatch({type: "UPDATE_USER_SESSION", payload: {socketId: null}})
       }
 
 
@@ -156,7 +222,6 @@ function Live() {
     useEffect(() => {
       axios.get(`/users/${userId}`)
       .then((res) => {
-        console.log('res', res, 'res.data', res.data)
         dispatch({type: 'UPDATE_STATE', payload: {playSound: res.data.userData.playSound, pieceStyle: res.data.userData.pieceStyle, whiteColor: res.data.userData.whiteColor, blackColor: res.data.userData.blackColor}})
       })
     })
@@ -177,7 +242,7 @@ function Live() {
 
       const getSeeks = () => {
         socket.emit('getSeeks', (res) => {
-          console.log('getSeeks called')
+          console.log('getSeeks called', res.data)
           if (res.success) {
             dispatch({type: 'UPDATE_SEEKS', payload: res.data})
           }
@@ -205,7 +270,7 @@ function Live() {
       seek: (data) => {
         console.log('seek called', 'data', data)
         socket.emit('seek', data, (res) => {
-          console.log(res)
+          console.log('seek response', res)
         })
         dispatch(updateUserSession({status: 'seeking'}))
       },
@@ -221,7 +286,7 @@ function Live() {
       },
 
       // emit a cancel seek
-      cancelSeek: (dispatch) => {
+      cancelSeek: () => {
         console.log('cancelSeek called')
         socket.emit('cancelSeek', (res) => {
             if (res.success) {

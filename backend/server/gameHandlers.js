@@ -8,13 +8,12 @@ import {User, Game} from '../database/model.js'
 
 let clickCount = 0
 export const users = {}
-let seeks = [
+const seeks = [
     // {name: "david's game", owner: 'david', rating: 1200, time: '5 minutes', rated: false, userId: 8},
     // {name: "josh's game", owner: 'josh', rating: 1350, time: '10 minutes', rated: true, userId: 5},
     // {name: "michael's game", owner: 'michael', rating: 1700, time: '1 minute', rated: true, userId: 7}
-
 ]
-let games = {}
+const games = {}
 
 
 export function handleConnect(socket, io) {
@@ -39,7 +38,7 @@ export function handleConnect(socket, io) {
         console.log('handleIncrement called')
         console.log(users, games)
         clickCount += amount
-        callback(clickCount)    
+        callback(clickCount, users)    
     })
 
     // handle get seeks request (client wants to see list of available live games)
@@ -50,22 +49,27 @@ export function handleConnect(socket, io) {
     // handle user creating a new seek
     socket.on('seek', (data, resCallback) => {
         console.log('seek event received', data)
-        let newGame = {time: 300, rated: false}
-        newGame = {...newGame, owner: username, userId, name: `${username}'s game`}
-        newGame = {...newGame, ...data}
-        seeks.push(newGame)
-        status = 'seeking'
-        users[userId].status = 'seeking'
-        io.emit('newSeek', newGame)
-        resCallback({success: true, message: 'Seek successfully created'})
+        User.findByPk(userId, {attributes: ['publicRating']})
+            .then(({publicRating}) => {
+                console.log('rating return from db', publicRating)
+                let newGame = {time: 300, rated: false, rating: publicRating, owner: username, userId, name: `${username}'s game`}
+                newGame = {...newGame, ...data}
+                seeks.push(newGame)
+                status = 'seeking'
+                users[userId].status = 'seeking'
+                io.emit('newSeek', newGame)
+                resCallback({success: true, message: 'Seek successfully created'})
+            })
 
     })
+    
 
     // Handle a user cancelling a seek
     socket.on('cancelSeek', (resCallback) => {
         console.log('cancelSeek triggered')
         let seekIndex = seeks.findIndex((seek) => seek.userId===userId)
         seeks.splice(seekIndex, 1)
+        users[userId] = {...users[userId], status: 'loggedIn'}
         // tell all sockets that a seek was removed associated with userId
         io.emit('removeSeek', userId)
         resCallback({success: true, message: 'Your seek was cancelled'})
@@ -76,6 +80,7 @@ export function handleConnect(socket, io) {
     socket.on('acceptSeek', (ownerId) => {
         console.log('acceptSeek event triggered')
         let ownerSocket = io.sockets.sockets.get(users[ownerId].socketId)
+        console.log('users', users, 'ownerSocket', ownerSocket)
         let mySeek = seeks.splice(seeks.findIndex((seek) => seek.userId === ownerId),1)
         // Players are paired and ready to play: Need to start game
         gameId = uuidv4()
@@ -114,7 +119,6 @@ export function handleConnect(socket, io) {
         console.log(games, gameId)
         console.log(socket.rooms)
         let gameUpdate = games[gameId].postMove(move)
-        console.log('Game responded to move', gameUpdate)
         // Do things depending on game state
         if (gameUpdate.positionCount>=3) {
             // implement emit draw offer

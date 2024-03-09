@@ -1,7 +1,6 @@
 import {User, Game} from '../database/model.js'
-import {Op} from 'sequelize'
+import {Op, Sequelize} from 'sequelize'
 import { users as socketUsers } from './gameHandlers.js'
-import { Sequelize } from 'sequelize'
 
 export const handlerFunctions = {
     login: async (req, res) => {
@@ -31,6 +30,7 @@ export const handlerFunctions = {
             })
             return
         }
+        // Successful login branch here
         let userSession = {
         userId: user.userId,
         username: usernameInput,
@@ -56,7 +56,7 @@ export const handlerFunctions = {
                 success: true,
                 userId: req.session.userId,
                 username: req.session.username,
-                status: 'loggedIn'
+                status: socketUsers[req.session.userId] ? socketUsers[req.session.userId].status : 'loggedIn'
             }
             let socketUser = socketUsers[response.userId]
             if (socketUser) {
@@ -109,7 +109,7 @@ export const handlerFunctions = {
 
     putStatus: (req, res) => {
         console.log('putStatus endpoint hit', req.params.userId, req.body.status)
-        socketUsers[req.params.userId] = req.body
+        socketUsers[req.params.userId] = {...socketUsers[req.params.userId], ...req.body}
         res.send({message: `User ${req.params.userId} status set to ${req.body.status}`, success: true})
     },
 

@@ -114,13 +114,13 @@ export default function reducer(state = initialState, action) {
             return {...state, isConnected: action.payload}
         
         case "UPDATE_USER_SESSION":
-            console.log('UPDATE_USER_SESSION being excecuted', action.payload)
             return {...state, userSession: {...state.userSession, ...action.payload}}
         
         case "UPDATE_CLICK_COUNT":
             return {...state, clickCount: action.payload}
 
         case "UPDATE_SEEKS":
+            console.log("UPDATE_SEEKS", state.seeks, action.payload)
             if (Array.isArray(action.payload)){
                 return {...state, seeks: action.payload}
             } else {

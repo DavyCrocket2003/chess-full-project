@@ -213,7 +213,7 @@ function ChessGame(params) {
                     if (!includePeaceful) {     // If only looking for check attacks, disregard castling
                         return false
                     }
-                    if (!mySquaresObj['11']==='V') {    // Requires an unmoved queenside rook
+                    if (mySquaresObj['11']!=='V') {    // Requires an unmoved queenside rook
                         return false
                     }       // squares in between must be empty
                     if (mySquaresObj['12'] || mySquaresObj['13'] || mySquaresObj['14']) {
@@ -232,7 +232,7 @@ function ChessGame(params) {
                     if (!includePeaceful) {     // If only looking for check attacks, disregard castling
                         return false
                     }
-                    if (!mySquaresObj['18']==='V') {    // Requires an unmoved kingside rook
+                    if (mySquaresObj['18']!=='V') {    // Requires an unmoved kingside rook
                         return false
                     }       // squares in between must be empty
                     if (mySquaresObj['16'] || mySquaresObj['17']) {
@@ -296,7 +296,7 @@ function ChessGame(params) {
                 }
                 // If: (A) '81': 'v' && '85': 'u' (B) '82', '83', '84' are blank (C) '83', '84', '85' not attacked (D) includePeaceful, then:
                 const canBlackOOO = () => {
-                    if (!mySquaresObj['81']==='v') {    // Requires an unmoved queenside rook
+                    if (mySquaresObj['81']!=='v') {    // Requires an unmoved queenside rook
                         return false
                     }       // squares in between must be empty
                     if (mySquaresObj['82'] || mySquaresObj['83'] || mySquaresObj['84']) {
@@ -312,7 +312,7 @@ function ChessGame(params) {
                 }
                 // If: (A) '88': 'v' && '85': 'u' (B) '86', '87' are blank (C) '85', '86' '87' not attacked (D) includePeaceful, then:
                 const canBlackOO = () => {
-                    if (!mySquaresObj['88']==='v') {    // Requires an unmoved kingside rook
+                    if (mySquaresObj['88']!=='v') {    // Requires an unmoved kingside rook
                         return false
                     }       // squares in between must be empty
                     if (mySquaresObj['86'] || mySquaresObj['87']) {
@@ -389,7 +389,18 @@ function ChessGame(params) {
         let promote = ''       // promotion
         
 
-        
+        // Need to remove lingering en passant pawns
+        let count = 0
+        for (let square in mySquaresObj) {
+            if (['L','M','l','m'].includes(mySquaresObj[square])) {
+                count ++
+                mySquaresObj[square] = {'L': 'P', 'M': 'P','l': 'p','m': 'p'}[mySquaresObj[square]]
+                if (count>1) {
+                    break
+                }
+            }
+        }
+
         // En passant, need to remove the pawn behind
         if (['L','M','l','m'].includes(piece)) {
             mySquaresObj[`${y2 + (pieceColor === 'white' ? -1 : 1)}${x2}`] = ''
@@ -425,8 +436,8 @@ function ChessGame(params) {
         }
 
         // handle pieces that revert after being moved
-        if (['L', 'M', 'l', 'm', 'V', 'v', 'U', 'u'].includes(piece)) {
-            piece = {'L': 'P', 'M': 'P', 'l': 'p', 'm': 'p', 'V': 'R', 'v': 'r', 'U': 'K', 'u': 'k'}[piece]
+        if (['V', 'v', 'U', 'u'].includes(piece)) {
+            piece = {'V': 'R', 'v': 'r', 'U': 'K', 'u': 'k'}[piece]
         }
         
         // no pieces have been moved yet
@@ -707,6 +718,7 @@ function ChessGame(params) {
             gameState.moveHistory.push(origin + target + (p ? p.toLowerCase() : ''))
             evaluateState()     // updates game status with no return value
             gameState.transcript.push(writeMove())
+            console.log(gameState.pieces)
             return this.getState()
         }
     }

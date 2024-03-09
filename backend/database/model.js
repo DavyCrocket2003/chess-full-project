@@ -62,6 +62,7 @@ User.init(
     },
     bio: {
         type: DataTypes.TEXT,
+        defaultValue: 'Your computerbox needs words!'
     },
     photoURL: {
         type: DataTypes.STRING,
