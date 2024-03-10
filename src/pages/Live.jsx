@@ -6,6 +6,7 @@ import { updateSocketSession } from '../controllers/sessionActions'
 import { updateUserSession } from '../controllers/sessionActions'
 import { io } from 'socket.io-client'
 import axios from 'axios'
+import GamePanel from '../components/GamePanel'
 
 const URL = 'http://localhost:8800'
 const socket = io(URL, {autoConnect: false})
@@ -222,7 +223,8 @@ function Live() {
     useEffect(() => {
       axios.get(`/users/${userId}`)
       .then((res) => {
-        dispatch({type: 'UPDATE_STATE', payload: {playSound: res.data.userData.playSound, pieceStyle: res.data.userData.pieceStyle, whiteColor: res.data.userData.whiteColor, blackColor: res.data.userData.blackColor}})
+        const {playSound, pieceStyle, whiteColor, blackColor, onBottom} = res.data.userData
+        dispatch({type: 'UPDATE_STATE', payload: {playSound, pieceStyle, whiteColor, blackColor, onBottom}})
       })
     })
 
@@ -342,16 +344,17 @@ function Live() {
 
   return (
     <>
-    {/* <h3>userId {userId} username {username} gameId {gameId?gameId:null} status {status} socketId {socketId}</h3>
-    <h3>player1Id: {player1Id} player2Id: {player2Id}</h3> */}
-    <p onClick={handleCountClick}>{clickCount} </p>
-    {(status==='inGame' || status==='completed') ? (
-    <div>
-      <ChessBoard emitters={emitters}/>
-    </div>
-  ) : (
-    <Seeks emitters={emitters}/>
-  )}
+        {/* <h3>userId {userId} username {username} gameId {gameId?gameId:null} status {status} socketId {socketId}</h3>
+        <h3>player1Id: {player1Id} player2Id: {player2Id}</h3> */}
+        {/* <p onClick={handleCountClick}>{clickCount} </p> */}
+        {(status==='inGame' || status==='completed') ? (
+        <div>
+          <ChessBoard emitters={emitters}/>
+          <GamePanel emitters={emitters}/>
+        </div>
+        ) : (
+          <Seeks emitters={emitters}/>
+        )}
     </>
   )
     

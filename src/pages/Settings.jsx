@@ -59,6 +59,10 @@ function Settings() {
             <td>{!editMode ? {true: 'Enabled', false: 'Disabled'}[userSettings.playSound] :   <select value={userSettings.playSound.toString()} onChange={(e) => settingsListener('playSound', e.target.value)}><option value='true'>Enabled</option><option value="false">Disabled</option></select>}</td>
           </tr>
           <tr>
+            <td>Board Layout:</td>
+            <td>{!editMode ? [userSettings.onBottom] :   <select value={userSettings.onBottom.toString()} onChange={(e) => settingsListener('onBottom', e.target.value)}><option value='regular'>Regular</option><option value="flipped">Flipped</option></select>}</td>
+          </tr>
+          <tr>
             <td>Piece Style (old or new): </td>
             <td>{!editMode ? `'${userSettings.pieceStyle}'` : <input type="text" value={userSettings.pieceStyle} onChange={(e) => settingsListener('pieceStyle', e.target.value)} />}</td>
           </tr>

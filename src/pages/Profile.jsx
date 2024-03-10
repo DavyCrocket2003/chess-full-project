@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux'
 import handlerFunctions from "../controllers/clientController"
+import { useParams } from 'react-router-dom'
 
 
 
@@ -10,8 +11,10 @@ function Profile() {
   const userId = useSelector(state => state.userSession.userId)
   const username = useSelector(state => state.userSession.username)
   const status = useSelector(state => state.userSession.status)
+  const profileId = useSelector(state => state.profileId)
 
   const [editMode, setEditMode] = useState(false)
+  const [publicMode, setPublicMode] = useState(false)
   const [userData, setUserData] = useState(null)
   const [verifyMode, setVerifyMode] = useState(false)
   const [usernameAttempt, setUsernameAttempt] = useState('')
@@ -19,7 +22,7 @@ function Profile() {
   const currentYear = new Date().getFullYear();
 
 
-  console.log(userId)
+
 
   const getUserData = async (id) => {
     try {
@@ -30,14 +33,17 @@ function Profile() {
       console.error('Error fetching data:', error);
     }
   }
-  
+
   // useEffect that populates user data
   useEffect(() => {
     // Use useEffect to fetch data when the component mounts
     console.log(`Hit useEffect`)
 
-    getUserData(userId); // Call the async function
-  }, [])
+    getUserData(profileId ? profileId : userId); // Call the async function
+    return () => {
+      dispatch({type: "UPDATE_PROFILE", payload: null})
+    }
+  }, [profileId])
 
   async function verifyPassword() {
     let res = await axios.post('/verify', {userId, password: passwordAttempt, username: usernameAttempt})
@@ -105,18 +111,14 @@ function Profile() {
           <tr>
             <td colSpan={2}>{!editMode ? <h4>{userData.bio}</h4> : <input type="text" value={userData.bio} onChange={(e) => dataListener('bio', e.target.value)} />}</td>
           </tr>
-          <tr>
+          {!profileId && <tr>
             <td>Email:</td>
             <td>{!editMode ? userData.email : <input type="email" value={userData.email} onChange={(e) => dataListener('email', e.target.value)} />}</td>
-          </tr>
-          <tr>
+          </tr>}
+          {!profileId && <tr>
             <td>Password:</td>
             <td>{!editMode ? '*'.repeat(userData.password.length) : <input type="password" value={userData.password} onChange={(e) => dataListener('password', e.target.value)} />}</td>
-          </tr>
-          <tr>
-            <td>Play Sounds:</td>
-            <td>{!editMode ? userData.playSound ? 'Enabled' : 'Disabled' :   <select onChange={(e) => dataListener('playSound', e.target.value)}><option value={true}>Enabled</option><option value={false}>Disabled</option></select>}</td>
-          </tr>
+          </tr>}
           <tr>
             <td>Location:</td>
             <td>{!editMode ? userData.country : <input type="text" value={userData.country} onChange={(e) => dataListener('country', e.target.value)} />}</td>
@@ -147,7 +149,7 @@ function Profile() {
           </tr>
         </tbody>
         <tfoot>
-          <tr>
+          {!profileId && <tr>
             {!editMode ? <> {verifyMode && (
               <div>
                 <p>Please verify your credentials to make changes</p>
@@ -165,6 +167,25 @@ function Profile() {
                 <td><button onClick={deleteAccount}>Delete Account</button></td>
               </>
             ))}
+          </tr>}
+          <tr>
+            {/* {!editMode ? <> {verifyMode && (
+              <div> //
+                <p>Please verify your credentials to make changes</p>
+                <input type="text" value={usernameAttempt} onChange={(e) => setUsernameAttempt(e.target.value)} />
+                <input type="password" value={passwordAttempt} onChange={(e) => setPasswordAttempt(e.target.value)} />
+                <button onClick={() => verifyPassword()}>Submit</button>
+              </div>
+            )} {(
+              <td>
+                <button onClick={() => setVerifyMode(!verifyMode)}>{!verifyMode ? 'Edit' : 'Cancel'}</button>
+              </td>
+            )} </> : ((
+              <>
+                <td><button onClick={saveChanges}>Save Changes</button></td>
+                <td><button onClick={deleteAccount}>Delete Account</button></td>
+              </>
+            ))} */}
           </tr>
         </tfoot>
       </table>

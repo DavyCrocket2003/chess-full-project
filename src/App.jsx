@@ -40,6 +40,7 @@ export default function App() {
       dispatch(updateUserSession({status: 'loggedIn'}))
       axios.put(`/status/${userSession.userId}`, {status: 'loggedIn'})
     }
+    dispatch({type: "UPDATE_PROFILE", payload: null})
   }
 
 

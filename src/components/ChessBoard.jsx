@@ -19,10 +19,27 @@ export default function ChessBoard(props) {
   const blackColor = useSelector((state) => state.blackColor)
   const dispatch = useDispatch()
   const playerColor = gameState.player1Id === userId ? 'white' : 'black'
+  const [squareKeys, setSquareKeys] = useState(null)
   let whiteOnBottom = playerColor === 'white' // These couple of lines deal with board direction
-  if (onBottom!=='regular') {
-    whiteOnBottom = !whiteOnBottom
-  }
+  
+  useEffect(() => {
+    let whiteOnBottom = playerColor === 'white' // These couple of lines deal with board direction
+    if (onBottom!=='regular') {
+      whiteOnBottom = !whiteOnBottom
+    }
+    // generate key seed of strings '11' to '88' to make squares representing the board
+    // ternary used below to conditionally render which player is 'onBottom"
+    let mySquares = []
+    for (let i = (whiteOnBottom ? 8 : 1); i!== (whiteOnBottom ? 0 : 9); i += (whiteOnBottom ? -1 : 1)) {
+      for (let j = (whiteOnBottom ? 1 : 8); j!== (whiteOnBottom ? 9 : 0); j += (whiteOnBottom ? 1 : -1)) {
+          mySquares.push(`${i}${j}`)
+      }
+    }
+    setSquareKeys(mySquares)
+
+  }, [onBottom])
+
+
 
   // set a reference to the first square of the chess board
   // used to style the player labels
@@ -36,29 +53,20 @@ export default function ChessBoard(props) {
   })
   
 
-  // generate key seed of strings '11' to '88' to make squares representing the board
-  let squareKeys = []
-  // ternary used below to conditionally render which player is 'onBottom"
-  for (let i = (whiteOnBottom ? 8 : 1); i!== (whiteOnBottom ? 0 : 9); i += (whiteOnBottom ? -1 : 1)) {
-    for (let j = (whiteOnBottom ? 1 : 8); j!== (whiteOnBottom ? 9 : 0); j += (whiteOnBottom ? 1 : -1)) {
-        squareKeys.push(`${i}${j}`)
-    }
-  }
+
 
 
   return (
     <div>
-      <Label userId={onBottom==="regular" ? opponent : userId} squareRef={square11Ref} />
       <DndContext modifiers={[snapCenterToCursor]} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-        <div className="grid" >
-        {squareKeys.map((key) => (
-          
-            <Square key={key} id={key} bc={(+key[0] + +key[1]) % 2 ? whiteColor : blackColor}/>
-          
-        ))}
-        </div>
+        {squareKeys && <div className="grid" >
+          <Label userId={onBottom==="regular" ? opponent : userId} />
+            {squareKeys.map((key) => (    
+              <Square key={key} id={key} bc={(+key[0] + +key[1]) % 2 ? whiteColor : blackColor}/>
+            ))}
+          <Label userId={onBottom==="regular" ? userId : opponent}/>
+        </div>}
       </DndContext>
-      <Label userId={onBottom==="regular" ? userId : opponent}/>
     </div>
   );
 

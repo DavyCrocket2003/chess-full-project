@@ -5,14 +5,14 @@ const initialState = {
         status: 'loggedOut',
         socketId: null,
     },
-    socketSession: {connected: false},
-    seeks: [],
-    onBottom: 'regular',
+    socketSession: {connected: false},  // not really in use
+    seeks: [],              // populates a list of games to join
+    onBottom: 'regular',    // User setting for flipping the board
     playSound: true,
     pieceStyle: 'new',      // 'old' or 'new'
     blackColor: '#583927',    // '#2E6F1E', // '#583927',
     whiteColor: '#EAC796', //'#56A62E',    // '#5f9ea0',    // 
-    dragOrigin: {square: null, piece: '', moves: []},
+    dragOrigin: {square: null, piece: '', moves: []},   // Used for Chessboard to handle drag events
     gameState: {
         squares: {
             '11': {piece: 'R', moves: []},
@@ -91,7 +91,8 @@ const initialState = {
 
     },
     clickCount: 0,
-    square11Ref: null,
+    square11Ref: null,      // Intended for anchoring to the chess board for dynamic sizing of other elements
+    profileId: null,        // This is for viewing others' profiles.
     
 }
 
@@ -132,6 +133,9 @@ export default function reducer(state = initialState, action) {
 
         case "UPDATE_REF":
             return {...state, square11Ref: action.payload}
+
+        case "UPDATE_PROFILE":
+            return {...state, profileId: action.payload}
 
         default:
             return state

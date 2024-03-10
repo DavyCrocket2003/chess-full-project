@@ -25,7 +25,7 @@ function Seeks({emitters}) {
 
     let gameRows = seeks.map((seek, index) => (
         <tr key={index}>
-            <td>{userSession.status!=='seeking' && <button onClick={() => emitters.acceptSeek(seek.userId)}>Join</button>}</td>
+            <td>{userSession.status!=='seeking' && !entryMode && <button onClick={() => emitters.acceptSeek(seek.userId)}>Join</button>}</td>
             <td>{seek.name}</td>
             <td>{seek.owner}</td>
             <td>{seek.rating}</td>

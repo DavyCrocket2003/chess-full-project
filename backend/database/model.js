@@ -56,6 +56,10 @@ User.init(
         type: DataTypes.BOOLEAN,
         defaultValue: true,
     },
+    onBottom: {
+        type: DataTypes.ENUM('regular', 'flipped'),
+        defaultValue: 'regular',
+    },
     showMoves: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
@@ -70,6 +74,7 @@ User.init(
     },
     country: {
         type: DataTypes.STRING,
+        defaultValue: 'Free Country USA'
     },
     birthYear: {
         type: DataTypes.INTEGER,

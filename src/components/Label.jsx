@@ -1,14 +1,17 @@
 import React, {useState, useEffect} from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import axios from 'axios'
 import './Label.css'
+import { useNavigate } from 'react-router-dom'
 
 function Label({userId, squareRef}) {
+    // squareRef is an attempt to dynamically style the label to match the board size
 
     const [userData, setUserData] = useState(null)
     const [width, setWidth] = useState('800px')
     const [height, setHeight] = useState('100px')
-
+    const dispatch = useDispatch()
+    const navigateTo = useNavigate()
 
     // function to get userData from server
     async function fetchUserData(id) {
@@ -21,12 +24,16 @@ function Label({userId, squareRef}) {
             console.log('Error fetching user data')
         }   
     }
-
     // gets user data from db
     useEffect(() => {
         fetchUserData(userId)
     }, [])
 
+    // function to send users to the profile page for the user in this label
+    const clickProfile = () => {
+        dispatch({type: "UPDATE_PROFILE", payload: userId})
+        navigateTo('/profile')
+    }
 
     // updates label size
     useEffect(() => {
@@ -40,10 +47,10 @@ function Label({userId, squareRef}) {
 
 
   return userData ? (
-    <div className='labelDiv' style={{ width: width, height: height }} >
+    <div className='labelDiv' >
       
-        <div className="labelItem" style={{ flex: '1'}}>
-            <div className="profileImage" style={{ width: '15px', height: '15px', overflow: 'hidden', position: 'relative' }}>
+        <div className="labelItem" >
+            <div className="profileImage">
                 <img 
                   src={userData.photoURL} 
                   alt="Profile Image" 
@@ -52,18 +59,16 @@ function Label({userId, squareRef}) {
                     height: '100%',
                     objectFit: 'cover',
                     objectPosition: 'center',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0
+                    position: 'relative',
                   }} 
                 />
             </div>
         </div>
-        <div className="labelItem" style={{ flex: '6'}}>{userData.username}</div>
-        <div className="labelItem" style={{ flex: '1'}}>{userData.publicRating}</div>
+        <div className="labelItem" onClick={clickProfile}>{userData.username}</div>
+        <div className="labelItem" >{userData.publicRating}</div>
       
     </div>
-  ) : (<p>Loading...</p>)
+  ) : (<div className='labelDiv'>Loading...</div>)
 }
 
 export default Label
