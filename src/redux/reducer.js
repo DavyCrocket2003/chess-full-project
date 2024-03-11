@@ -80,16 +80,20 @@ const initialState = {
             '87': {piece: 'n', moves: ['66','68']},
             '88': {piece: 'r', moves: []}
         },
+        moveHistory: [],
+        status: null,
+        chat: [],
+        turn: 'white',
+        message: null,
+        positionCount: null,
         player1Id: null,
         player2Id: null,
         player1Time: null,
         player2Time: null,
-        turn: 'white',
         gameId: null,
-        gameName: '',
-        status: null,
 
     },
+    transcript: [],
     clickCount: 0,
     square11Ref: null,      // Intended for anchoring to the chess board for dynamic sizing of other elements
     profileId: null,        // This is for viewing others' profiles.
@@ -131,6 +135,8 @@ export default function reducer(state = initialState, action) {
         case "UPDATE_GAME":
             return {...state, gameState: {...state.gameState, ...action.payload}}
 
+        case "UPDATE_TRANSCRIPT":
+            return {...state, transcript: action.payload}
         case "UPDATE_REF":
             return {...state, square11Ref: action.payload}
 

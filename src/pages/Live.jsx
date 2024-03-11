@@ -56,7 +56,8 @@ function Live() {
       // handle game start
       function handleGameStart(data) {
         console.log('handleGameStart triggered', 'data', data)
-        dispatch({type: "UPDATE_GAME", payload: {...data, squares: {
+        const {transcript, ...restOfData} = data
+        dispatch({type: "UPDATE_GAME", payload: {...restOfData, squares: {
           '11': {piece: 'R', moves: []},
           '12': {piece: 'N', moves: ['31','33']},
           '13': {piece: 'B', moves: []},
@@ -122,13 +123,16 @@ function Live() {
           '87': {piece: 'n', moves: ['66','68']},
           '88': {piece: 'r', moves: []}
       }}})
+      dispatch({type: "UPDATE_TRANSCRIPT", payload: []})
         dispatch(updateUserSession({status: 'inGame'}))
       }
 
       // handle game update
       function handleGameUpdate(data) {
         console.log('handleGameUpdate triggered', 'data', data)
-        dispatch({type: "UPDATE_GAME", payload: data})
+        const {transcript, ...restOfData} = data
+        dispatch({type: "UPDATE_GAME", payload: restOfData})
+        dispatch({type: "UPDATE_TRANSCRIPT", payload: transcript})
         console.log(playSound)
         if (playSound) {
           let lastMove = data.transcript[data.transcript.length-1]
@@ -243,12 +247,12 @@ function Live() {
       }
 
       const getSeeks = () => {
-        socket.emit('getSeeks', (res) => {
+        socket.emit('getSeeks', {userId}, (res) => {
           console.log('getSeeks called', res.data)
           if (res.success) {
             dispatch({type: 'UPDATE_SEEKS', payload: res.data})
           }
-        })
+      })
       }
 
       socketCheck()
@@ -271,7 +275,7 @@ function Live() {
       // emit new seek
       seek: (data) => {
         console.log('seek called', 'data', data)
-        socket.emit('seek', data, (res) => {
+        socket.emit('seek', {data, userId}, (res) => {
           console.log('seek response', res)
         })
         dispatch(updateUserSession({status: 'seeking'}))
@@ -280,7 +284,7 @@ function Live() {
       // emit a request to get seek list
       getSeeks: () => {
         console.log('getSeeks called')
-        socket.emit('getSeeks', (res) => {
+        socket.emit('getSeeks', {userId}, (res) => {
             if (res.success) {
                 dispatch({type: "UPDATE_SEEKS", payload: res.data})
             }
@@ -290,41 +294,41 @@ function Live() {
       // emit a cancel seek
       cancelSeek: () => {
         console.log('cancelSeek called')
-        socket.emit('cancelSeek', (res) => {
+        socket.emit('cancelSeek', {userId}, (res) => {
             if (res.success) {
                 dispatch(updateUserSession({status: 'loggedIn'}))
             }
       })},
 
       // emit a request to accept an existing seek
-      acceptSeek: (userId) => {
+      acceptSeek: (ownerId) => {
         console.log('acceptSeek called')
-        socket.emit('acceptSeek', userId, )
+        socket.emit('acceptSeek', {ownerId, userId}, )
       },
 
       ///\\\ The below occur inside a game room \\\///
       // emit a move
       move: (move) => {
         console.log('move called', move)
-        socket.emit('move', move, gameId)
+        socket.emit('move', {move, gameId, userId})
       },
 
       // resign
       resign: () => {
         console.log('resign called')
-        socket.emit('resign')
+        socket.emit('resign', {userId})
       },
 
       // offer draw
       drawOffer: () => {
-        console.log('drawOffer called')
+        console.log('drawOffer called', {userId})
         socket.emit('drawOffer')
       },
 
       // emit message (used emit convention to not confuse meaning)
       emitMessage: (message) => {
         console.log('emitMessage called', 'message', message)
-        socket.emit('message', message)
+        socket.emit('message', {message, userId})
       }
     }
 
@@ -348,7 +352,7 @@ function Live() {
         <h3>player1Id: {player1Id} player2Id: {player2Id}</h3> */}
         {/* <p onClick={handleCountClick}>{clickCount} </p> */}
         {(status==='inGame' || status==='completed') ? (
-        <div>
+        <div style={{display: 'flex'}}>
           <ChessBoard emitters={emitters}/>
           <GamePanel emitters={emitters}/>
         </div>

@@ -14,12 +14,12 @@ export default function ChessBoard(props) {
   const gameState = useSelector((state) => state.gameState)
   const squares = gameState.squares
   const userId = useSelector((state) => state.userSession.userId)
-  const opponent = gameState.player1Id===userId ? gameState.player2Id : gameState.player1Id
   const whiteColor = useSelector((state) => state.whiteColor)
   const blackColor = useSelector((state) => state.blackColor)
   const dispatch = useDispatch()
   const playerColor = gameState.player1Id === userId ? 'white' : 'black'
   const [squareKeys, setSquareKeys] = useState(null)
+  const [opponent, setOpponent] = useState(gameState.player1Id===userId ? gameState.player2Id : gameState.player1Id)
   let whiteOnBottom = playerColor === 'white' // These couple of lines deal with board direction
   
   useEffect(() => {

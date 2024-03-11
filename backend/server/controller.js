@@ -39,7 +39,7 @@ export const handlerFunctions = {
         req.session.userId = user.userId
         req.session.username = usernameInput
         req.session.status = 'loggedIn'
-        socketUsers[user.userId] = {...socketUsers[user.userId], ...userSession}
+        socketUsers[user.userId] = {...socketUsers[user.userId], username: userSession.username, status: userSession.status}
 
         res.send({
             message: "user logged in",
@@ -56,11 +56,12 @@ export const handlerFunctions = {
                 success: true,
                 userId: req.session.userId,
                 username: req.session.username,
-                status: socketUsers[req.session.userId] ? socketUsers[req.session.userId].status : 'loggedIn'
+                status: 'loggedIn',
             }
-            let socketUser = socketUsers[response.userId]
+            let socketUser = socketUsers[req.session.userId]
             if (socketUser) {
-                response = {...response, ...socketUser}
+                const {socket, ...cleanData} = socketUser
+                response = {...response, ...cleanData}
             }
             res.send(response)
         } else {

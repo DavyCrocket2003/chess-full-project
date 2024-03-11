@@ -691,6 +691,7 @@ function ChessGame(params) {
     return {
         getState: function() {
             console.log('getState called')
+            console.log('rated from ChessGame', gameState.rated)
             return {
                 squares: gameState.squares,         // pieces and available moves for each square
                 transcript: gameState.transcript,   // written record of moves as an array with bells and whistles
@@ -701,9 +702,9 @@ function ChessGame(params) {
                 positionCount: gameState.positionCount,                      // How many times has current position arisen
                 player1Id,                          // Who is white
                 player2Id,                          // Who is black
-                rated: gameState.rated,
                 player1Time: gameState.player1Time, // remaining time
                 player2Time: gameState.player2Time, // remaining time
+                rated: gameState.rated,
             }
         },
         postMove: function({origin, target, p}) {
