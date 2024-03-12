@@ -1,7 +1,8 @@
 # Live Chess Server
 
 This is an online chess application
-I'm getting really good at 2 move checkmates XD
+The dnd-kit makes for a very satisfying chess experience.
+I'm getting really good at 2 move checkmates. XD
 
 Primary Features
 - Create Accounts, Login and Out, and Delete Accounts
