@@ -1,4 +1,4 @@
-import {User, Game} from '../database/model.js'
+import {User, Game, Friendship, Message} from '../database/model.js'
 import {Op, Sequelize} from 'sequelize'
 import { users as socketUsers } from './gameHandlers.js'
 
@@ -150,17 +150,172 @@ export const handlerFunctions = {
     },
 
     deleteUser: async (req, res) => {
-        try {
-            console.log(req.params)
-            await User.destroy({
-                where: {userId: req.params.userId}
+        User.findByPk(req.params.userId)
+            .then(user => {
+                if (!user) {
+                return res.status(404).send('User not found');
+                }
+                return user.destroy();
             })
-            res.send({message: 'User account deleted', success: true})
-        } catch (err) {
-            res.send({message: 'Error deleting account', success: false})
-            throw(err)
+            .then(() => {
+                res.send('User deleted successfully');
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+                res.status(500).send('An error occurred while deleting the user');
+        });
+    },
+
+    getFriends: async (req, res) => {
+        const {userId} = req.params
+        const unsortedFriends = await Friendship.findAll({
+            where: {[Op.or]: [{user1Id: userId}, {user2Id: userId}]}
+        })
+         const friendList = unsortedFriends.map(friend => {
+            console.log('friend', friend, 'userId', userId)
+            console.log({
+                userId: (+userId)!==(+friend.user1Id)?friend.user1Id:friend.user2Id,
+                createdAt: friend.createdAt,
+                requestedBy: friend.requestedBy,
+                status: friend.status,
+            })
+            return {
+                userId: (+userId)!==(+friend.user1Id)?friend.user1Id:friend.user2Id,
+                createdAt: friend.createdAt,
+                requestedBy: friend.requestedBy,
+                status: friend.status,
+            }
+         })
+        res.send({message: 'Here are the list of friends', success: true, friendList})
+    },
+
+    getFriendship: async (req, res) => {
+        console.log('getFriendship request', req.query)
+        const friendship = await Friendship.findOne({
+            where: {
+                [Op.or]: [{
+                    [Op.and]: [{user1Id: req.query.user1Id}, {user2Id: req.query.user2Id}]
+                }, {
+                    [Op.and]: [{user1Id: req.query.user2Id}, {user2Id: req.query.user1Id}]
+                }]
+        }})
+        if (!friendship) {
+            res.send({success: false, message: 'users are not friends'})
+        } else {
+            res.send({success: true, message: 'here is the friendship info', friendship})
         }
-        return
+    },
+
+    postFriendship: async (req, res) => {
+        console.log('postFriendship', req.body)
+        try {
+            await Friendship.create({
+                user1Id: req.body.user1Id,
+                user2Id: req.body.user2Id,
+                requestedBy: req.body.user1Id,
+                status: 'pending',
+            })
+            res.send({success: true, message: 'friendship requested'})
+        } catch (err) {
+            res.send({success: false, message: 'friendship request failed'})
+            throw err
+        }
+        
+    },
+
+    putFriendship: async (req, res) => {
+        console.log('putFriendship', req.body)
+        try {
+                const friendship = await Friendship.findOne({
+                where: {
+                    [Op.or]: [{
+                        [Op.and]: [{user1Id: req.body.user1Id}, {user2Id: req.body.user2Id}]
+                    }, {
+                        [Op.and]: [{user1Id: req.body.user2Id}, {user2Id: req.body.user1Id}]
+                    }]
+            }})
+            if (!friendship) {
+                res.send({success: false, message: 'users are not friends'})
+            } else {
+                friendship.createdAt = Date.now()
+                friendship.status = req.body.status
+                await friendship.save()
+                res.send({success: true, message: `friendship status updated to ${req.body.status}`})
+            }}
+        catch (err) {
+            console.log('error updating friendship', err)
+            res.status(500).send({success: false, message: 'An error occurred while updating friendship'})
+        }
+    },
+
+    postMessage: async (req, res) => {
+        try {
+            const {subject, body, senderId, receiverId} = req.body
+            await Message.create({subject, body, senderId, receiverId})
+            res.send({message: "Message sent successfully", success: true})
+        } catch (err) {
+            console.error(err)
+            res.send({message: "There was a problem saving the message", success: false})
+        }
+    },
+
+    getSentMessages: (req, res) => {
+        Message.findAll({
+            where: {senderId: req.params.userId},
+            include: {model: User, as: 'receiver', attributes: ['username', 'photoURL']}
+        })
+            .then((sentMessages) => {
+                res.send({message: "Here are the sent messages", sentMessages, success: true})
+            })
+            .catch(error => {
+                console.error(error)
+                res.send({message: "Error fetching messages", success: false, error})
+            })
+    },
+
+    getReceivedMessages: (req, res) => {
+        Message.findAll({
+            where: {receiverId: req.params.userId},
+            include: {model: User, as: 'sender', attributes: ['username', 'photoURL']}
+        })
+            .then((receivedMessages) => {
+                res.send({message: "Here are the received messages", receivedMessages, success: true})
+            })
+            .catch(error => {
+                console.error(error)
+                res.send({message: "Error fetching messages", success: false, error})
+            })
+    },
+
+    putMessage: (req, res) => {
+        Message.findByPk(req.body.messageId).then(message => {
+            if (message) {
+                return message.update({status: req.body.messageId})
+            }
+        }).then(updatedMessage => {
+            if (updatedMessage) {
+                res.send({message: 'Message updated successfully', success: true})
+            } else {
+                res.send({message: 'Error updating message', success: false})
+            }
+        })
+    },
+
+    deleteMessage: (req, res) => {
+        Message.findByPk(req.params.messageId)
+            .then(message => {
+                if (!message) {
+                return res.status(404).send('Message not found');
+                }
+                return message.destroy();
+            })
+            .then(() => {
+                res.send({message: 'Message deleted successfully', success: true});
+            })
+            .catch(error => {
+                console.error('Error deleting message:', error);
+                res.status(500).send({message: 'An error occurred while deleting the message', success: false});
+        });
     }
     
 }

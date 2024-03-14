@@ -149,36 +149,83 @@ export class Message extends Model {
     [util.inspect.custom]() {
       return this.toJSON()
     }
-  }
-  Message.init(
-    {
-      messageId: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-      },
-      createdAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-      },
-      subject: {
-        type: DataTypes.STRING
-      },
-      body: {
-        type: DataTypes.TEXT
-      },
-      recieverId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      }
+}
+Message.init(
+  {
+    messageId: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
     },
-    {
-      sequelize: db,
-      modelName: 'message'
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    subject: {
+      type: DataTypes.STRING
+    },
+    body: {
+      type: DataTypes.TEXT
+    },
+    senderId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    receiverId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.ENUM('normal', 'senderDeleted', 'receiverDeleted'),
+      defaultValue: 'normal'
     }
-  )
+  },
+  {
+    sequelize: db,
+    modelName: 'message'
+  }
+)
 
-
+export class Friendship extends Model {
+  [util.inspect.custom]() {
+    return this.toJSON()
+  }
+}
+Friendship.init(
+  {
+    friendshipId: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    user1Id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      allowNull: false,
+    },
+    user2Id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      allowNull: false,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    requestedBy: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.ENUM('pending', 'accepted', 'rejected'),
+      allowNull: false,
+    },
+  },
+  {
+    sequelize: db,
+    modelName: 'friendship'
+  }
+)
 
 
 
@@ -190,6 +237,8 @@ User.hasMany(Game, { as: 'player1', foreignKey: 'player1Id'})
 User.hasMany(Game, { as: 'player2', foreignKey: 'player2Id'})
 Game.belongsTo(User)
 
-User.hasMany(Message)
-Message.belongsTo(User)
 
+User.hasMany(Message, { foreignKey: 'senderId', as: 'sentMessages' });
+User.hasMany(Message, { foreignKey: 'receiverId', as: 'receivedMessages' });
+Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
+Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });

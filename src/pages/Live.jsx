@@ -92,7 +92,7 @@ function Live() {
           '48': {piece: '', moves: []},
           '51': {piece: '', moves: []},
           '52': {piece: '', moves: []},
-          '35': {piece: '', moves: []},
+          '53': {piece: '', moves: []},
           '54': {piece: '', moves: []},
           '55': {piece: '', moves: []},
           '56': {piece: '', moves: []},
@@ -122,9 +122,10 @@ function Live() {
           '86': {piece: 'b', moves: []},
           '87': {piece: 'n', moves: ['66','68']},
           '88': {piece: 'r', moves: []}
-      }}})
-      dispatch({type: "UPDATE_TRANSCRIPT", payload: []})
+        }}})
+        dispatch({type: "UPDATE_TRANSCRIPT", payload: []})
         dispatch(updateUserSession({status: 'inGame'}))
+        dispatch({type: "CLEAR_MESSAGES"})
       }
 
       // handle game update
@@ -151,8 +152,7 @@ function Live() {
           if (playSound) {
             sound.end.play()
           }
-          // alert that pops up at the end of the game
-          console.log('message', data.message, 'userId', userId, 'player1Id', data.player1Id)
+          // print end game message in chat
           let messageInsert = ''
           if (data.status === '1-0') {
             if (data.player1Id === userId) {
@@ -169,7 +169,7 @@ function Live() {
           }
           dispatch(updateUserSession({status: 'completed'}))
           axios.put(`/status/${userId}`, {status: 'completed'})
-          alert(data.message + messageInsert)
+          dispatch({type: "UPDATE_MESSAGES", payload: {senderName: 'Game', message: data.message + messageInsert}})
 
           // do other game end things
         }
@@ -187,9 +187,10 @@ function Live() {
       }
 
       // handle message
-      function handleMessage(message) {
+      function handleMessage({senderName, message}) {
         //  Need to implement
         console.log(message)
+        dispatch({type: "UPDATE_MESSAGES", payload: {senderName, message}})
       }
 
       function onDisconnect() {
@@ -237,7 +238,6 @@ function Live() {
       const socketCheck = () => {
         console.log('socketCheck called')
         socket.emit('socketCheck', (res => {
-          clg(res.message)
           if (res.success) {
             let {socketId, socketUserId, gameId, status} = res.data
             dispatch(updateUserSession({socketId, gameId, status, userId}))
@@ -328,7 +328,7 @@ function Live() {
       // emit message (used emit convention to not confuse meaning)
       emitMessage: (message) => {
         console.log('emitMessage called', 'message', message)
-        socket.emit('message', {message, userId})
+        socket.emit('message', {userId, message, senderName: username})
       }
     }
 

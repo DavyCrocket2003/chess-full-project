@@ -61,7 +61,21 @@ app.post('/register', handlerFunctions.register)
 
 app.delete('/users/:userId', handlerFunctions.deleteUser)
 
+app.get('/friends/:userId', handlerFunctions.getFriends)
 
+app.get('/friendship', handlerFunctions.getFriendship)
+
+app.post('/friendship', handlerFunctions.postFriendship)
+
+app.put('/friendship', handlerFunctions.putFriendship)
+
+app.post('/messages', handlerFunctions.postMessage)
+
+app.get('/sentMessages/:userId', handlerFunctions.getSentMessages)
+
+app.get('/receivedMessages/:userId', handlerFunctions.getReceivedMessages)
+
+app.put('/messages', handlerFunctions.putMessage)
 
 
 

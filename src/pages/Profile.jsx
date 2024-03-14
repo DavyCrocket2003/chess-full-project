@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux'
 import handlerFunctions from "../controllers/clientController"
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 
 
@@ -12,15 +12,27 @@ function Profile() {
   const username = useSelector(state => state.userSession.username)
   const status = useSelector(state => state.userSession.status)
   const profileId = useSelector(state => state.profileId)
+  const navigateTo = useNavigate()
 
   const [editMode, setEditMode] = useState(false)
-  const [publicMode, setPublicMode] = useState(false)
   const [userData, setUserData] = useState(null)
   const [verifyMode, setVerifyMode] = useState(false)
   const [usernameAttempt, setUsernameAttempt] = useState('')
   const [passwordAttempt, setPasswordAttempt] = useState('')
+  const [friendshipData, setFriendshipData] = useState(null)
   const currentYear = new Date().getFullYear();
-
+  const getFriendship = async () => {
+    let response = null
+    if (userId && profileId && userId!==profileId) {
+      response = await axios.get(`/friendship`, {
+        params: {
+          user1Id: userId,
+          user2Id: profileId
+        }
+      })
+    }
+    setFriendshipData(response?response.data.friendship:null)
+  }
 
 
 
@@ -37,9 +49,10 @@ function Profile() {
   // useEffect that populates user data
   useEffect(() => {
     // Use useEffect to fetch data when the component mounts
-    console.log(`Hit useEffect`)
-
     getUserData(profileId ? profileId : userId); // Call the async function
+    // Fetch viewer<-->profile friendship status
+    getFriendship()
+    // Clean off the state
     return () => {
       dispatch({type: "UPDATE_PROFILE", payload: null})
     }
@@ -76,6 +89,35 @@ function Profile() {
       }
     }
   }
+  // Need to write functions for:
+  // acceptRequest
+  const handleRequest = (status) => {
+    axios.put('/friendship', {user1Id: userId, user2Id: profileId, status})
+      .then((res) => {
+        if (res.data.success) {
+          alert(`Friendship ${status}`)
+          setFriendshipData({...friendshipData, status, createdAt: Date.now()})
+        } else {
+          // fail case
+        }
+      })
+  }
+  // sendMessage
+  const sendMessage = () => {
+    dispatch({type: "UPDATE_MESSAGE_TARGET", payload: profileId})
+    navigateTo('/messages')
+  }
+
+  // sendRequest
+  const sendRequest = () => {
+    axios.post('/friendship', {user1Id: userId, user2Id: profileId})
+    .then((res) => {
+      if (res.data.success) {
+        alert('Friendship request sent')
+        setFriendshipData({status: 'pending', requestedBy: userId})
+      }
+    })
+  }
 
 
   const dataListener = (property, value) => {
@@ -98,19 +140,36 @@ function Profile() {
                     height: '100%',
                     objectFit: 'cover',
                     objectPosition: 'center',
-                    position: 'absolute',
+                    position: 'relative',
                     top: 0,
                     left: 0
                   }} 
                 />
-                {editMode && <input type="url" value={userData.photoURL} onChange={(e) => dataListener('photoURL', e.target.value)}></input>}
               </div>
 
             </td>
           </tr>
+                {editMode && <tr><td><input type="url" value={userData.photoURL} onChange={(e) => dataListener('photoURL', e.target.value)}></input></td></tr>}
           <tr>
             <td colSpan={2}>{!editMode ? <h4>{userData.bio}</h4> : <input type="text" value={userData.bio} onChange={(e) => dataListener('bio', e.target.value)} />}</td>
           </tr>
+          <tr>Stuff: {JSON.stringify(friendshipData)}</tr>
+          {(() => {
+            switch (friendshipData?.status) {
+              case "pending":
+                return friendshipData.requestedBy===userId ? (
+                <tr><td>Friend Request Sent</td></tr>
+                ) : (
+                  <tr><td><button onClick={() => handleRequest('accepted')}>Accept Friend Request</button></td><td><button onClick={() => handleRequest('rejected')}>Delete</button></td></tr>
+                )
+              case "accepted":
+                return <tr><td>Friends since {friendshipData.createdAt}</td><td><button onClick={sendMessage}>Message</button></td></tr>
+              case "rejected":
+                return null
+              default:
+                return (profileId && <tr><td><button onClick={sendRequest}>Add Friend</button></td></tr>)
+            }
+          })()}
           {!profileId && <tr>
             <td>Email:</td>
             <td>{!editMode ? userData.email : <input type="email" value={userData.email} onChange={(e) => dataListener('email', e.target.value)} />}</td>

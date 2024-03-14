@@ -94,9 +94,11 @@ const initialState = {
 
     },
     transcript: [],
+    messages: [],
     clickCount: 0,
     square11Ref: null,      // Intended for anchoring to the chess board for dynamic sizing of other elements
     profileId: null,        // This is for viewing others' profiles.
+    messageTarget: null,    // Intended recipient of a message
     
 }
 
@@ -142,6 +144,15 @@ export default function reducer(state = initialState, action) {
 
         case "UPDATE_PROFILE":
             return {...state, profileId: action.payload}
+
+        case "UPDATE_MESSAGES":
+            return {...state, messages: [...state.messages, action.payload]}
+
+        case "CLEAR_MESSAGES":
+            return {...state, messages: []}
+
+        case "UPDATE_MESSAGE_TARGET":
+            return {...state, messageTarget: action.payload}
 
         default:
             return state

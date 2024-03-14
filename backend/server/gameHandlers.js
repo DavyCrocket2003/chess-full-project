@@ -75,7 +75,9 @@ export function handleConnect(socket, io) {
 
     // Handle a user cancelling a seek
     socket.on('cancelSeek', ({userId}, resCallback) => {
-        updateUser({userId: req.userId, socket})
+        // need to account for a logged out user (possible for this to be hit)
+        // I think the issue is multiple sockets with the same user
+        updateUser({userId, socket})
         console.log('cancelSeek triggered')
         let seekIndex = seeks.findIndex((seek) => seek.userId===userId)
         seeks.splice(seekIndex, 1)
@@ -84,7 +86,6 @@ export function handleConnect(socket, io) {
         io.emit('removeSeek', userId)
         resCallback({success: true, message: 'Your seek was cancelled'})
     })
-
 
     // Handle a user accepting a seek
     socket.on('acceptSeek', ({ownerId, userId}) => {
@@ -123,7 +124,7 @@ export function handleConnect(socket, io) {
         myGame = ChessGame(gameData)
         games[gameId] = myGame
 
-        io.to(gameId).emit('gameStart', {...gameData, gameOn: true})
+        io.to(gameId).emit('gameStart', {...gameData, gameOn: true, turn: 'white'})
 
                 
     })
@@ -141,7 +142,7 @@ export function handleConnect(socket, io) {
         }
         // check if the game outcome has been determined (meaning game is over)
         if (['1-0', '0-1', '½-½'].includes(gameUpdate.status)) {
-            Game.create({
+            Game.create({   // save the game to the database
                 uuid: gameId,
                 moves: gameUpdate.moveHistory,
                 player1Time: gameUpdate.player1Time,
@@ -155,7 +156,6 @@ export function handleConnect(socket, io) {
             })
             
             // update player ratings
-            let winner = {'1-0': gameUpdate.player1Id, '½-½': gameUpdate.player2Id, '0-1': null}[gameUpdate.status]
             User.findAll({where: {userId: [gameUpdate.player1Id, gameUpdate.player2Id]}, attributes: ['userId', 'publicRating', 'privateRating']})
                 .then(playerRecords => {
                     if (playerRecords[0].userId!==gameUpdate.player1Id) {
@@ -169,6 +169,7 @@ export function handleConnect(socket, io) {
                         let publicDelta = calculateElo(playerRecords[0].publicRating, playerRecords[1].publicRating, gameUpdate.status)
                         playerRecords[0].publicRating += publicDelta
                         playerRecords[1].publicRating -= publicDelta
+                        // could implement emit rating change
                     }
                     playerRecords[0].save()
                     playerRecords[1].save()
@@ -180,7 +181,6 @@ export function handleConnect(socket, io) {
                         return Math.round(delta)
                     }
                 })
-
 
             // remove game from users' userId
             users[gameUpdate.player1Id].gameId = null
@@ -207,6 +207,12 @@ export function handleConnect(socket, io) {
         }
     })
 
+    // Handle game chat messages
+    socket.on('message', ({userId, senderName, message}) => {
+        updateUser({userId, socket})
+        
+        socket.broadcast.to(users[userId].gameId).emit('message', {senderName, message})
+    })
 
     // Handle socket disconnect
     socket.on('disconnect', (socket) => {
