@@ -1,0 +1,12 @@
+table {
+    border-collapse: separate;
+    border-spacing: 0px;
+}
+
+td {
+    max-width: 175px;
+}
+
+input {
+    max-width: 175px;
+}

@@ -77,6 +77,8 @@ app.get('/receivedMessages/:userId', handlerFunctions.getReceivedMessages)
 
 app.put('/messages', handlerFunctions.putMessage)
 
+app.delete('/messages/:messageId', handlerFunctions.deleteMessage)
+
 
 
 

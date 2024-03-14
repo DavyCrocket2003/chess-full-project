@@ -16,7 +16,7 @@ function GamePanel({emitters}) {
     let myRows = []
     for (let i=0; i<(transcript?transcript.length : 0); i+=2) {
       myRows.push(
-        <tr key={i} className="transcript"><td>{i/2 + 1}</td><td>{transcript[i]}</td><td>{transcript[i+1]}</td></tr>
+        <tr key={i} className="transcript"><td style={{textAlign: 'center', fontWeight: 700}}>{i/2 + 1} </td><td>{transcript[i]}</td><td>{transcript[i+1]}</td></tr>
       )
     }
     setTranscriptRows(myRows)
@@ -30,15 +30,13 @@ function GamePanel({emitters}) {
 
   return (
     <div className="gamePanel">
-      {/* Top portion: Game transcript */}
       <div className="transcriptContainer">
         <table className="transcriptTable">
           <thead>
             <tr>
-              <th>Move</th><th>White</th><th>Black</th>
+              <th style={{width: '25px', fontWeight: 'normal'}}></th><th>White</th><th>Black</th>
             </tr>
           </thead>
-          {/* Table body for displaying game transcript */}
           <tbody>
             {transcriptRows}
           </tbody>

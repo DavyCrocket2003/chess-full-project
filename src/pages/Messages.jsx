@@ -47,6 +47,26 @@ function Messages() {
     })
   }
 
+  const receivedMessagesHTML = receivedMessages.filter(msg => msg.status!=='receiverDeleted')
+  .map((msg, idx) => (
+    <MessageTile
+      key={idx}
+      messageObj={msg}
+      userId={userId}
+      callback={fetchMessages}
+    />))
+
+  const sentMessagesHTML = sentMessages.filter(msg => msg.status!=='senderDeleted')
+      .map((msg, idx) => (
+        <MessageTile
+          key={idx}
+          messageObj={msg}
+          userId={userId}
+          callback={fetchMessages}
+        />
+    ))
+
+    
 
 
 
@@ -54,17 +74,17 @@ function Messages() {
   return !messageTarget ? (
     <>
       <h3>Inbox</h3>
-      {receivedMessages?.length>0 ? (
+      {receivedMessagesHTML?.length>0 ? (
         <>
-          {receivedMessages.filter(msg => msg.status!=='receiverDeleted').map((msg, idx) => (<MessageTile key={idx} messageObj={msg} userId={userId} callback={fetchMessages} />))}
+          {receivedMessagesHTML}
         </>
       ) : (
         <p>No messages</p>
       )}
-      {sentMessages?.length>0 && (
+      {sentMessagesHTML?.length>0 && (
         <>
           <h3>Sent Messages</h3>
-          {sentMessages.filter(msg => msg.status!=='senderDeleted').map((msg, idx) => (<MessageTile key={idx} messageObj={msg} userId={userId} callback={fetchMessages} />))}
+          {sentMessagesHTML}
         </>
       )}
     </>

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
-
 function MessageTile({messageObj, userId, callback}) {
     const {subject, body, senderId, receiverId, createdAt} = messageObj
     const otherUser = senderId===userId ? receiverId : senderId
@@ -44,17 +43,12 @@ function MessageTile({messageObj, userId, callback}) {
         } else {
             axios.put('/messages', {messageId: messageObj.messageId, status: senderId===userId ? 'senderDeleted' : 'receiverDeleted'})
         }
+        callback()
     }
-    
-
-
-
-
-
 
 
   return otherData ? (
-    <div >
+    <div className='messageTile' >
         <div className='labelDiv' >
         
             <div className="labelItem" >
@@ -82,13 +76,12 @@ function MessageTile({messageObj, userId, callback}) {
                     {body}
                 </p>
                 <input type="button" value={userId===senderId?"Message Again":"Message Back"} onClick={sendMessage} />
-                <input type="button" value="Delete" onClick={() => deleteMessage(messageId, userId)} />
+                <input type="button" value="Delete" onClick={() => deleteMessage(messageObj.messageId, userId)} />
             </div>
-        
         }
     </div>
   ) : (
-    <h3>Loading...</h3>
+    <h4>Loading...</h4>
   )
 }
 

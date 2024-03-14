@@ -3,6 +3,10 @@
     overflow-y: auto; /* Enable vertical scrolling */
     display: flex;
     flex-direction: column;
+    background-color: #eeeeee;
+    border: 1px solid black;
+    padding: 5px;
+    max-width: 250px;
   }
   
   .message {

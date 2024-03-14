@@ -36,19 +36,21 @@ function Seeks({emitters}) {
 
 
   return (
-    <div>
+    <>
+    <div className='styledContainer' id='seeksForm'>
       {entryMode && <form onSubmit={(e) => handleSubmitSeek(e)} >
-        <input type="text" value={entryFormState.name} onChange={(e) => setEntryFormState({...entryFormState, name: e.target.value})} />
-        <label htmlFor="rated">Rated?</label><input name="rated"type="checkbox" onChange={(e) => setEntryFormState({...entryFormState, rated: e.target.checked})} />
-        <input type="text" value={entryFormState.time} onChange={(e) => setEntryFormState({...entryFormState, time: e.target.value})} />
-        <input type="submit" value="Submit" />
+        <input type="text" value={entryFormState.name} onChange={(e) => setEntryFormState({...entryFormState, name: e.target.value})} /><br/>
+        <label htmlFor="rated">Rated?</label><input name="rated"type="checkbox" onChange={(e) => setEntryFormState({...entryFormState, rated: e.target.checked})} /><br/>
+        <input type="text" value={entryFormState.time} onChange={(e) => setEntryFormState({...entryFormState, time: e.target.value})} /><br/>
+        <input type="submit" value="Submit" /><br/>
       </form>}
+      {userSession.status!=='seeking' ? <button style={{display: 'block'}} onClick={() => setEntryMode(!entryMode)}>{!entryMode ? 'New Game' : 'Cancel'}</button> : <button onClick={() => emitters.cancelSeek()}>Cancel Your Game</button>}
+    </div>
+    <div className='styledContainer' id='seeksBox'>
       <table>
         <tbody>
           <tr>
-            <td colSpan={5}>
-              {userSession.status!=='seeking' ? <button onClick={() => setEntryMode(!entryMode)}>{!entryMode ? 'New Game' : 'Cancel'}</button> : <button onClick={() => emitters.cancelSeek()}>Cancel Your Game</button>}
-            </td>
+            
           </tr>
           <tr>
             <td></td>
@@ -63,6 +65,7 @@ function Seeks({emitters}) {
 
       </table>
     </div>
+    </>
   )
 }
 

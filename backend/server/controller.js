@@ -153,16 +153,16 @@ export const handlerFunctions = {
         User.findByPk(req.params.userId)
             .then(user => {
                 if (!user) {
-                return res.status(404).send('User not found');
+                return res.status(404).send({message: 'User not found', success: false});
                 }
                 return user.destroy();
             })
             .then(() => {
-                res.send('User deleted successfully');
+                res.send({message: 'User deleted successfully', success: true});
             })
             .catch(error => {
                 console.error('Error deleting user:', error);
-                res.status(500).send('An error occurred while deleting the user');
+                res.status(500).send({message: 'An error occurred while deleting the user', success: false});
         });
     },
 
@@ -290,7 +290,7 @@ export const handlerFunctions = {
     putMessage: (req, res) => {
         Message.findByPk(req.body.messageId).then(message => {
             if (message) {
-                return message.update({status: req.body.messageId})
+                return message.update({status: req.body.status})
             }
         }).then(updatedMessage => {
             if (updatedMessage) {

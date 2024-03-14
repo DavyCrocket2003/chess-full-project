@@ -29,23 +29,23 @@ function Friends() {
 
 
   return (
-    <>
-    <h3>Your Friends</h3>
-    {friendList ? (
-      <div>
-        {friendsArray}
-      </div>
-    ) : <h3>Loading Friends...</h3>}
-    
-    {friendRequests?.length>0 && (
-      <div>
-        <h3>Friend Requests</h3>
-        <p>Click the name to go to the profile and accept</p>
-        {friendRequests}
-      </div>
-    )}
+    <div className='styledContainer' id='friendBox'>
+      <h3>Your Friends</h3>
+      {friendList ? (
+        <div>
+          {friendsArray}
+        </div>
+      ) : <h3>Loading Friends...</h3>}
+      
+      {friendRequests?.length>0 && (
+        <div>
+          <h3>Friend Requests</h3>
+          <p>Click the name to go to the profile and accept</p>
+          {friendRequests}
+        </div>
+      )}
 
-    </>
+    </div>
     )
 }
 

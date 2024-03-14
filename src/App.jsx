@@ -10,6 +10,7 @@ import axios from 'axios';
 import { updateUserSession } from './controllers/sessionActions';
 import handlerFunctions from './controllers/clientController';
 import Login from './pages/Login';
+import './chess.css'
 
 
 
@@ -42,9 +43,6 @@ export default function App() {
     }
     dispatch({type: "UPDATE_PROFILE", payload: null})
   }
-
-
-
 
   return (
     <>

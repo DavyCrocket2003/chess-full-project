@@ -1,0 +1,26 @@
+.styledContainer {
+    display: flex;
+    border: 1px solid green;
+    align-content: center;
+    margin: auto;
+    padding: 25px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+#profileBox {
+    max-width: 400px;
+}
+
+#seeksBox {
+    max-width: 500px;
+}
+
+#friendBox {
+    max-width: 500px;
+    min-height: 600px;
+}
+
+body {
+    background-color: rgb(6, 118, 29);
+}

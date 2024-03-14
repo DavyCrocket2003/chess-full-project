@@ -2,8 +2,18 @@
     display: flex;
     grid-column: span 8;
     grid-row: span 1;
-    max-width: 100%;
     overflow: hidden;
+    background-color: #eeeeee;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.labelDiv > *:last-child {
+    margin-right: 10px; /* Add a margin to the right of the last child */
+}
+
+.labelDiv > :nth-child(2) {
+    font-size: 1.5em;
 }
 
 .labelItem {

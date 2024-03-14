@@ -3,6 +3,7 @@ import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux'
 import handlerFunctions from "../controllers/clientController"
 import { useParams, useNavigate } from 'react-router-dom'
+import './Profile.css'
 
 
 
@@ -81,6 +82,7 @@ function Profile() {
     let response = prompt("Are you sure you want to delete your account? Y or N")
     if (response[0].toUpperCase() === 'Y') {
       const res = await axios.delete(`/users/${userId}`)
+
       if (res.data.success) {
         alert('Account deleted')
         handlerFunctions.handleLogout('', dispatch)
@@ -119,19 +121,17 @@ function Profile() {
     })
   }
 
-
   const dataListener = (property, value) => {
       setUserData({...userData, [property]: value})
     }
 
-
   return userData ? (
-    <div>
+    <div className='styledContainer' id='profileBox'>
       <table>
         <tbody>
           <tr>
             <td>
-              <div style={{ width: '250px', height: '250px', overflow: 'hidden', position: 'relative' }}>
+              <div style={{ width: '200px', height: '200px', overflow: 'hidden', position: 'relative' }}>
                 <img 
                   src={userData.photoURL} 
                   alt="Description of the image" 
@@ -153,7 +153,7 @@ function Profile() {
           <tr>
             <td colSpan={2}>{!editMode ? <h4>{userData.bio}</h4> : <input type="text" value={userData.bio} onChange={(e) => dataListener('bio', e.target.value)} />}</td>
           </tr>
-          <tr>Stuff: {JSON.stringify(friendshipData)}</tr>
+          {/* <tr>Stuff: {JSON.stringify(friendshipData)}</tr> */}
           {(() => {
             switch (friendshipData?.status) {
               case "pending":
@@ -210,7 +210,7 @@ function Profile() {
         <tfoot>
           {!profileId && <tr>
             {!editMode ? <> {verifyMode && (
-              <div>
+              <div style={{maxWidth: '175px'}}>
                 <p>Please verify your credentials to make changes</p>
                 <input type="text" value={usernameAttempt} onChange={(e) => setUsernameAttempt(e.target.value)} />
                 <input type="password" value={passwordAttempt} onChange={(e) => setPasswordAttempt(e.target.value)} />
@@ -227,25 +227,6 @@ function Profile() {
               </>
             ))}
           </tr>}
-          <tr>
-            {/* {!editMode ? <> {verifyMode && (
-              <div> //
-                <p>Please verify your credentials to make changes</p>
-                <input type="text" value={usernameAttempt} onChange={(e) => setUsernameAttempt(e.target.value)} />
-                <input type="password" value={passwordAttempt} onChange={(e) => setPasswordAttempt(e.target.value)} />
-                <button onClick={() => verifyPassword()}>Submit</button>
-              </div>
-            )} {(
-              <td>
-                <button onClick={() => setVerifyMode(!verifyMode)}>{!verifyMode ? 'Edit' : 'Cancel'}</button>
-              </td>
-            )} </> : ((
-              <>
-                <td><button onClick={saveChanges}>Save Changes</button></td>
-                <td><button onClick={deleteAccount}>Delete Account</button></td>
-              </>
-            ))} */}
-          </tr>
         </tfoot>
       </table>
     </div>

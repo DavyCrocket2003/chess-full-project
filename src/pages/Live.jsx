@@ -20,13 +20,6 @@ function Live() {
     const {gameId} = useSelector((state) => state.gameState)
     const playSound = useSelector((state) => state.playSound)
     const dispatch = useDispatch()
-    
-    const handleCountClick = () => {
-      socket.emit('increment', 1, (count, users) => {
-        console.log(users)
-        dispatch({type: "UPDATE_CLICK_COUNT", payload: count})
-      })
-    }
 
     // Attatch socket listeners and connect to socketserver
     useEffect(() => {
@@ -173,7 +166,6 @@ function Live() {
 
           // do other game end things
         }
-
       }
 
       // handle draw offer
@@ -341,18 +333,10 @@ function Live() {
       castle: new Audio('../pieces/castle.mp3'),
       end: new Audio('../pieces/end.mp3'),
     }
-
-
-
-
-
   return (
     <>
-        {/* <h3>userId {userId} username {username} gameId {gameId?gameId:null} status {status} socketId {socketId}</h3>
-        <h3>player1Id: {player1Id} player2Id: {player2Id}</h3> */}
-        {/* <p onClick={handleCountClick}>{clickCount} </p> */}
         {(status==='inGame' || status==='completed') ? (
-        <div style={{display: 'flex'}}>
+        <div style={{display: 'flex'}} id='chessBox'>
           <ChessBoard emitters={emitters}/>
           <GamePanel emitters={emitters}/>
         </div>
