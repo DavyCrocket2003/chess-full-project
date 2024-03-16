@@ -30,8 +30,8 @@ function Messages({emitMessage}) {
         <div key={idx}><span color={userColor}>{senderName}: </span>{message}</div>
       ))}
       <form className='chatFormContainer' onSubmit={(e) => handleSubmit(e)}>
-        <input value={messageInput} type='text' placeholder='Enter your message...' onChange={(e) => setMessageInput(e.target.value)} />
-        <button type='submit'>Send</button>
+        <input value={messageInput} style={{maxWidth: '100px'}} type='text' placeholder='Chat...' onChange={(e) => setMessageInput(e.target.value)} />
+        <button type='submit' >Send</button>
       </form>
     </div>
   )

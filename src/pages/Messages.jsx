@@ -72,28 +72,37 @@ function Messages() {
 
   
   return !messageTarget ? (
-    <>
-      <h3>Inbox</h3>
-      {receivedMessagesHTML?.length>0 ? (
-        <>
-          {receivedMessagesHTML}
-        </>
-      ) : (
-        <p>No messages</p>
-      )}
-      {sentMessagesHTML?.length>0 && (
-        <>
-          <h3>Sent Messages</h3>
+    <div className='messagesContainer'>
+      <div className='messageBox'>
+        <h4 className='header'>Inbox</h4>
+        {receivedMessagesHTML?.length > 0 ? receivedMessagesHTML : <p>No messages</p>}
+      </div>
+      {sentMessagesHTML?.length > 0 && (
+        <div className='messageBox'>
+          <h4 className='header'>Sent Messages</h4>
           {sentMessagesHTML}
-        </>
+        </div>
       )}
-    </>
+    </div>
   ) : (
-    <form onSubmit={sendMessage} >
-      <input type="text" placeholder='subject' value={messageData.subject} onChange={(e) => setMessageData({...messageData, subject: e.target.value})}/>
-      <input type="text" placeholder='message body' value={messageData.body} onChange={(e) => setMessageData({...messageData, body: e.target.value})}/>
-      <input type="submit" value="Send" />
-    </form>
+    <div className='composeMessageBox'>
+      <form onSubmit={sendMessage} >
+        <input
+          type="text" placeholder='subject'
+          value={messageData.subject}
+          style={{marginBottom: '10px'}}
+          onChange={(e) => setMessageData({...messageData, subject: e.target.value})}
+        /><br/>
+        <textarea
+          value={messageData.body}
+          onChange={(e) => setMessageData({...messageData, body: e.target.value})}
+          rows={4} // Specify the number of visible text lines
+          cols={50} // Specify the width of the textarea in characters
+          placeholder="Enter your message here..."
+        /><br/>
+        <input type="submit" value="Send" />
+      </form>
+    </div>
   )
 }
 

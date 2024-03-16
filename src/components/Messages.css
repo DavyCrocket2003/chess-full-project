@@ -6,7 +6,7 @@
     background-color: #eeeeee;
     border: 1px solid black;
     padding: 5px;
-    max-width: 250px;
+    max-width: 200px;
   }
   
   .message {
@@ -18,4 +18,8 @@
     margin-top: auto;
     display: flex;
     align-items: center;
+  }
+
+  input {
+    max-width: 100px;
   }

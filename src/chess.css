@@ -1,11 +1,19 @@
 .styledContainer {
     display: flex;
-    border: 1px solid green;
+    border: 1px solid #888888;
     align-content: center;
     margin: auto;
     padding: 25px;
     border-radius: 10px;
-    background-color: white;
+    background-color: #eeeeee;
+}
+
+.boldText {
+    font-weight: 700;
+}
+
+.paddedRight {
+    padding-right: 10px;
 }
 
 #profileBox {
@@ -13,14 +21,127 @@
 }
 
 #seeksBox {
-    max-width: 500px;
+    max-width: 400px;
 }
 
-#friendBox {
-    max-width: 500px;
-    min-height: 600px;
+#seeksForm {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    align-items: center;
+}
+
+.seeksFormElement {
+    padding-right: 5px;
+}
+
+.formElement {
+    margin: 5px;
+    margin-top: 0;
+}
+
+.styledContainer .seeksFormElement {
+    margin: 5px;
+    margin-top: 10px;
+    margin-bottom: 0;
 }
 
 body {
-    background-color: rgb(6, 118, 29);
+    background-color: rgb(140, 136, 180);
+}
+
+.loginBox {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    align-items: center;    
+    
+}
+
+.centeredBlock {
+    display: inline-block;
+    text-align: left;
+}
+
+.messageBox {
+    max-width: 500px;
+    margin-bottom: 20px; /* Adjust spacing between message boxes */
+    padding: 25px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.messagesContainer {
+    display: flex;
+    flex-direction: column; /* Stack message boxes vertically */
+    align-items: center; /* Center message boxes horizontally */
+}
+
+.messageTileContainer {
+    display: flex;
+    min-width: 250px;
+    border: 1px solid #888888;
+    margin-bottom: 10px; /* Adjust spacing between tiles */
+    border-radius: 10px;
+    background-color: #eeeeee;
+}
+
+.profileImage {
+    width: 50px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
+    margin-right: 10px; /* Adjust spacing between profile image and content */
+}
+
+.messageContent {
+    flex-grow: 1; /* Allow content to expand to fill remaining space */
+}
+
+.labelItem {
+    cursor: pointer; /* Add pointer cursor to clickable items */
+    border-radius: 0;
+}
+
+.backgroundImage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Ensure the background stays behind other content */
+    opacity: 0.5; /* Adjust the opacity value to your preference (0.5 is 50% opacity) */
+    /* Add other background properties */
+    background-image: url('../pieces/bg.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+
+.settingsTable {
+    max-width: 400px;
+    margin: 0 auto;
+}
+.settingsBox {
+    max-width: 350px;
+}
+
+.composeMessageBox {
+    max-width: 450px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.friendsContainer {
+    display: flex;
+    flex-direction: column; /* Stack message boxes vertically */
+    align-items: center; /* Center message boxes horizontally */
+}
+.friendsBox {
+    border: 1px solid black;
+    background-color: #eeeeee;
+    padding: 10px;
+    border-radius: 10px;
+    min-width: 25%;
 }

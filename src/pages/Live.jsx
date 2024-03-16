@@ -16,7 +16,6 @@ const socket = io(URL, {autoConnect: false})
 function Live() {
 
     const {userId, username, status, socketId} = useSelector((state) => state.userSession)
-    const clickCount = useSelector((state) => state.clickCount)
     const {gameId} = useSelector((state) => state.gameState)
     const playSound = useSelector((state) => state.playSound)
     const dispatch = useDispatch()
@@ -220,6 +219,7 @@ function Live() {
     useEffect(() => {
       axios.get(`/users/${userId}`)
       .then((res) => {
+        console.log(res.data)
         const {playSound, pieceStyle, whiteColor, blackColor, onBottom} = res.data.userData
         dispatch({type: 'UPDATE_STATE', payload: {playSound, pieceStyle, whiteColor, blackColor, onBottom}})
       })
@@ -336,12 +336,14 @@ function Live() {
   return (
     <>
         {(status==='inGame' || status==='completed') ? (
-        <div style={{display: 'flex'}} id='chessBox'>
+        <div style={{display: 'flex' }} id='chessBox'>
           <ChessBoard emitters={emitters}/>
           <GamePanel emitters={emitters}/>
         </div>
         ) : (
-          <Seeks emitters={emitters}/>
+          <div >
+            <Seeks emitters={emitters}/>
+          </div>
         )}
     </>
   )

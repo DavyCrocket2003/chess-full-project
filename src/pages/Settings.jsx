@@ -43,8 +43,8 @@ function Settings() {
 
 
   return userSettings ? (
-    <div>
-      <table>
+    <div className='styledContainer settingsBox'>
+      <table className='settingsTable'>
         <tbody>
           <tr>
             <td>White Squares Color:</td>

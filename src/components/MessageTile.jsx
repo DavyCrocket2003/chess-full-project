@@ -5,6 +5,7 @@ import axios from 'axios'
 
 function MessageTile({messageObj, userId, callback}) {
     const {subject, body, senderId, receiverId, createdAt} = messageObj
+    const toFrom = senderId===userId ? 'To ' : 'From: '
     const otherUser = senderId===userId ? receiverId : senderId
     const [expanded, setExpanded] = useState(false)
     const [otherData, setOtherData] = useState(null)
@@ -47,42 +48,37 @@ function MessageTile({messageObj, userId, callback}) {
     }
 
 
-  return otherData ? (
-    <div className='messageTile' >
-        <div className='labelDiv' >
-        
-            <div className="labelItem" >
-                <div className="profileImage">
-                    <img 
-                    src={otherData.photoURL} 
-                    alt="Profile Image" 
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        objectPosition: 'center',
-                        position: 'relative',
-                    }} 
-                    />
-                </div>
-            </div>
-            <div className="labelItem" onClick={clickProfile}>{otherData.username}</div>
-            <div className="labelItem" onClick={() => {setExpanded(!expanded)}}>{subject}</div>
-        
-        </div>
-        {expanded && 
-            <div>
-                <p>
-                    {body}
-                </p>
+    return otherData ? (
+        <div className='messageTileContainer'>
+          <div className='profileImage'>
+            <img 
+              src={otherData.photoURL} 
+              alt="Profile Image" 
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center',
+                position: 'relative',
+              }} 
+            />
+          </div>
+          <div className='messageContent'>
+            <div className='labelItem' onClick={clickProfile}>{toFrom}{otherData.username}</div>
+            <div className='labelItem' onClick={() => {setExpanded(!expanded)}}>Subject: {subject}</div>
+            {expanded && 
+              <div>
+                <p>{body}</p>
                 <input type="button" value={userId===senderId?"Message Again":"Message Back"} onClick={sendMessage} />
                 <input type="button" value="Delete" onClick={() => deleteMessage(messageObj.messageId, userId)} />
-            </div>
-        }
-    </div>
-  ) : (
-    <h4>Loading...</h4>
-  )
+              </div>
+            }
+          </div>
+        </div>
+      ) : (
+        <h4>Loading...</h4>
+      )
+      
 }
 
 export default MessageTile

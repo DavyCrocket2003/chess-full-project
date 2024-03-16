@@ -12,12 +12,7 @@ import handlerFunctions from './controllers/clientController';
 import Login from './pages/Login';
 import './chess.css'
 
-
-
-
 export default function App() {
-
-
 
   const userSession = useSelector((state) => state.userSession)
   const dispatch = useDispatch()
@@ -28,7 +23,6 @@ export default function App() {
       dispatch(updateUserSession(res.data))
     }
   }
-
 
   useEffect(() => {
     sessionCheck()
@@ -46,16 +40,15 @@ export default function App() {
 
   return (
     <>
-    <Navbar expand="lg" className="bg-body-tertiary" onClick={handleCompletedToLoggedIn}>
+    <Navbar expand="lg" className="bg-body-tertiary" onClick={handleCompletedToLoggedIn} style={{border: '1px solid black'}}>
       <Container>
-        <Navbar.Brand as={Link} to="/"><img
+        <Navbar.Brand as={Link} style={{/*marginLeft: '20px'*/}} to="/"><img
             src="./chess.jpg" alt="Chess icon" width="30" height="30" className="d-inline-block align-top"/></Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Collapse id="basic-navbar-nav" >
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/live">Live Chess</Nav.Link>
             <Nav.Link as={Link} to="/computer">Computer Chess</Nav.Link>
-            <Nav.Link as={Link} to="/correspondence">Correspondence Chess</Nav.Link>
             <Nav.Link as={Link} to="/messages">Messages</Nav.Link>
             <NavDropdown title={userSession.userId ? userSession.username : "User Menu"} id="basic-nav-dropdown">
               <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
@@ -72,7 +65,11 @@ export default function App() {
         </Navbar.Collapse>
       </Container>
     </Navbar>
-    {userSession.userId ? (<Outlet />) : (<Login />)}
+      <div >
+        <div className='backgroundImage'>
+        </div>
+        {userSession.userId ? (<Outlet />) : (<Login />)}
+      </div>
     </>
   )
 }

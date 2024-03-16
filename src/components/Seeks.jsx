@@ -25,12 +25,12 @@ function Seeks({emitters}) {
 
     let gameRows = seeks.map((seek, index) => (
         <tr key={index}>
-            <td>{userSession.status!=='seeking' && !entryMode && <button onClick={() => emitters.acceptSeek(seek.userId)}>Join</button>}</td>
-            <td>{seek.name}</td>
-            <td>{seek.owner}</td>
-            <td>{seek.rating}</td>
-            <td>{seek.time}</td>
-            <td>{seek.rated.toString()}</td>
+            <td className='paddedRight'>{userSession.status!=='seeking' && !entryMode && <button onClick={() => emitters.acceptSeek(seek.userId)}>Join</button>}</td>
+            <td className='paddedRight'>{seek.name}</td>
+            <td className='paddedRight'>{seek.owner}</td>
+            <td className='paddedRight'>{seek.rating}</td>
+            {/* <td className='paddedRight'>{seek.time}</td> */}
+            <td>{seek.rated?'Yes':'No'}</td>
         </tr>
     ))
 
@@ -40,11 +40,11 @@ function Seeks({emitters}) {
     <div className='styledContainer' id='seeksForm'>
       {entryMode && <form onSubmit={(e) => handleSubmitSeek(e)} >
         <input type="text" value={entryFormState.name} onChange={(e) => setEntryFormState({...entryFormState, name: e.target.value})} /><br/>
-        <label htmlFor="rated">Rated?</label><input name="rated"type="checkbox" onChange={(e) => setEntryFormState({...entryFormState, rated: e.target.checked})} /><br/>
-        <input type="text" value={entryFormState.time} onChange={(e) => setEntryFormState({...entryFormState, time: e.target.value})} /><br/>
-        <input type="submit" value="Submit" /><br/>
+        <label htmlFor="rated" style={{marginRight: '4px'}}>Rated?</label><input className='seeksFormElement' name="rated"type="checkbox" onChange={(e) => setEntryFormState({...entryFormState, rated: e.target.checked})} />
+        {/* <input type="text" value={entryFormState.time} onChange={(e) => setEntryFormState({...entryFormState, time: e.target.value})} /><br/> */}
+        <input type="submit" value="Submit" className='seeksFormElement' /><button className='seeksFormElement' onClick={() => setEntryMode(false)}>Cancel</button>
       </form>}
-      {userSession.status!=='seeking' ? <button style={{display: 'block'}} onClick={() => setEntryMode(!entryMode)}>{!entryMode ? 'New Game' : 'Cancel'}</button> : <button onClick={() => emitters.cancelSeek()}>Cancel Your Game</button>}
+      {userSession.status==='seeking' ? <button onClick={() => emitters.cancelSeek()}>Cancel Your Game</button> : (!entryMode && <button style={{display: 'block'}} onClick={() => setEntryMode(true)}>New Game</button>) }
     </div>
     <div className='styledContainer' id='seeksBox'>
       <table>
@@ -52,13 +52,13 @@ function Seeks({emitters}) {
           <tr>
             
           </tr>
-          <tr>
-            <td></td>
-            <td>Name</td>
-            <td>Owner</td>
-            <td>Rating</td>
-            <td>Time Control</td>
-            <td>Rated?</td>
+          <tr className='boldText'>
+            <td className='paddedRight'></td>
+            <td className='paddedRight'>Name</td>
+            <td className='paddedRight'>Owner</td>
+            <td className='paddedRight'>Rating</td>
+            {/* <td className='paddedRight'>Time Control</td> */}
+            <td className='paddedRight'>Rated?</td>
           </tr>
           {gameRows}
         </tbody>
