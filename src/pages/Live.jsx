@@ -18,7 +18,9 @@ function Live() {
     const {userId, username, status, socketId} = useSelector((state) => state.userSession)
     const {gameId} = useSelector((state) => state.gameState)
     const playSound = useSelector((state) => state.playSound)
+    const blackColor = useSelector(state => state.blackColor)
     const dispatch = useDispatch()
+    console.log('userId', userId, 'username', username, 'status', status, 'socketId', socketId, 'gameId', gameId, 'playSound', playSound, 'blackColor', blackColor)
 
     // Attatch socket listeners and connect to socketserver
     useEffect(() => {
@@ -126,7 +128,7 @@ function Live() {
         const {transcript, ...restOfData} = data
         dispatch({type: "UPDATE_GAME", payload: restOfData})
         dispatch({type: "UPDATE_TRANSCRIPT", payload: transcript})
-        console.log(playSound)
+        console.log('playSound', playSound)
         if (playSound) {
           let lastMove = data.transcript[data.transcript.length-1]
           if (lastMove.includes('+')) {
@@ -217,13 +219,15 @@ function Live() {
 
     // Get user game settings
     useEffect(() => {
+      console.log('predispatch playSound', playSound)
       axios.get(`/users/${userId}`)
       .then((res) => {
         console.log(res.data)
         const {playSound, pieceStyle, whiteColor, blackColor, onBottom} = res.data.userData
         dispatch({type: 'UPDATE_STATE', payload: {playSound, pieceStyle, whiteColor, blackColor, onBottom}})
+        console.log('postdispatch playSound', playSound)
       })
-    })
+    }, [])
 
     // get socket information and seeks list
     useEffect(() => {
@@ -335,6 +339,8 @@ function Live() {
     }
   return (
     <>
+    <p>playSound: {playSound}</p>
+    <p>blackColor: {blackColor}</p>
         {(status==='inGame' || status==='completed') ? (
         <div style={{display: 'flex' }} id='chessBox'>
           <ChessBoard emitters={emitters}/>

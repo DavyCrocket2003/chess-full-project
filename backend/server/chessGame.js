@@ -1,4 +1,5 @@
-
+// This file contains the function that generates a chess game object using a params object
+ 
 
 function ChessGame(params) {
     console.log('ChessGame called', params)
@@ -96,7 +97,7 @@ function ChessGame(params) {
 
 
 
-    // function that returns an array of candidate moves for square
+    // function that returns an array of candidate moves for a piece on the given square
     function squareMoveCandidates(squaresObj, square, includePeaceful=true) {
         // console.log('squareMoveCandidates called', includePeaceful)
         if (squaresObj[square]==='') {
@@ -465,7 +466,7 @@ function ChessGame(params) {
         return result
     }
 
-    // function to check if candidate move is legal (must already follow the rules of piece movement)
+    // function to check if candidate move is legal (aka does it leave the player's king in check)
     function isLegal(squaresObj, origin, target) {
         // console.log('isLegal called', 'origin', origin, 'target', target)
         let mySquaresObj = {...squaresObj}
@@ -477,7 +478,7 @@ function ChessGame(params) {
     }
 
     // function to populate a board (with pieces on it) with legal moves to hand back to players
-    // translates pieces into cosmetics (ie no unmoveds or en passnant special pieces)
+    // doesn't destinguish between special pieces (ie no unmoveds or en passnant special pieces)
     function exportMoves(squaresObj) {
         // console.log('exportMoves called')
         let mySquaresObj = {...squaresObj}
@@ -496,14 +497,14 @@ function ChessGame(params) {
 
     // function to compress a board state into a string representation
     function stateToString(squaresObj, turn=gameState.turn) {
-        console.log('stateToString called','turn', turn)
+        // console.log('stateToString called','turn', turn)
         let result = turn==='white' ? 'T': 't'
         for (let i=1; i<9; i++) {
             for (let j=1; j<9; j++) {
                 result += squaresObj[`${i}${j}`] === '' ? '_' : squaresObj[`${i}${j}`]
             }
         }
-        console.log('stateToString returning', result)
+        // console.log('stateToString returning', result)
         return result
     }
 
@@ -690,8 +691,8 @@ function ChessGame(params) {
     
     return {
         getState: function() {
-            console.log('getState called')
-            console.log('rated from ChessGame', gameState.rated)
+            // console.log('getState called')
+            // console.log('rated from ChessGame', gameState.rated)
             return {
                 squares: gameState.squares,         // pieces and available moves for each square
                 transcript: gameState.transcript,   // written record of moves as an array with bells and whistles
@@ -708,7 +709,7 @@ function ChessGame(params) {
             }
         },
         postMove: function({origin, target, p}) {
-            console.log('postMove called', 'origin', origin, 'target', target, 'p', p)
+            // console.log('postMove called', 'origin', origin, 'target', target, 'p', p)
             let {squares, flags} = movePieces(gameState.pieces, origin, target, p)
             gameState.pieces = squares
             currentFlags = flags
@@ -719,7 +720,7 @@ function ChessGame(params) {
             gameState.moveHistory.push(origin + target + (p ? p.toLowerCase() : ''))
             evaluateState()     // updates game status with no return value
             gameState.transcript.push(writeMove())
-            console.log(gameState.pieces)
+            // console.log(gameState.pieces)
             return this.getState()
         }
     }
