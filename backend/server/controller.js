@@ -1,5 +1,5 @@
 import {User, Game, Friendship, Message} from '../database/model.js'
-import {Op, Sequelize} from 'sequelize'
+import {Op} from 'sequelize'
 import { users as socketUsers } from './gameHandlers.js'
 
 export const handlerFunctions = {

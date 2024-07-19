@@ -9,7 +9,15 @@ function GamePanel({emitters}) {
   const messages = useSelector(state => state.messages)
   
   const [transcriptRows, setTranscriptRows] = useState([])
-  console.log('transcript', transcript)
+  const [showResignModal, setShowResignModal] = useState(false)
+  const [showDrawModal, setShowDrawModal] = useState(false)
+
+  const buttons = {
+    
+  }
+  const handleResign = () => {
+    setShowResignModal(true)
+  }
 
   // useEffect for updating transcript rows
   useEffect(() => {
@@ -43,6 +51,9 @@ function GamePanel({emitters}) {
         </table>
       </div>
 
+    
+
+      
       <Messages emitMessage={emitters.emitMessage}/>
     </div>
   )
