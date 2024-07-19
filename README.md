@@ -1,8 +1,33 @@
-# React + Vite
+# Live Chess Server
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is an online chess application
+The dnd-kit makes for a very satisfying chess experience.
+I'm getting really good at 2 move checkmates. XD
 
-Currently, two official plugins are available:
+Primary Features
+- Create Accounts, Login and Out, and Delete Accounts
+- Queue up and join live chess games
+  - Live games include chat
+- Supports ranked or unranked games
+- Customize your profile
+- Can view opponents and add as friends
+- Send messages to friends
+- View game history
+- Review previous games
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Primary Tech Stack
+- React
+- Axios
+- Node.js
+- Express
+- PostgreSQL
+- Socket.IO
+
+Other Technologies
+- Redux
+- React dnd-kit
+- Sequelize
+- express-session
+- bootstrap
+- vite-express
+  
