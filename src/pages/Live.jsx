@@ -339,8 +339,8 @@ function Live() {
     }
   return (
     <>
-    <p>playSound: {playSound}</p>
-    <p>blackColor: {blackColor}</p>
+    {/* <p>playSound: {playSound}</p>
+    <p>blackColor: {blackColor}</p> */}
         {(status==='inGame' || status==='completed') ? (
         <div style={{display: 'flex' }} id='chessBox'>
           <ChessBoard emitters={emitters}/>
