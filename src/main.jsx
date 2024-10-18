@@ -10,7 +10,6 @@ import Correspondence from './pages/Correspondence.jsx'
 import Messages from './pages/Messages.jsx'
 import Profile from './pages/Profile.jsx'
 import Friends from './pages/Friends.jsx'
-import Computer from './pages/Computer.jsx'
 import Settings from './pages/Settings.jsx'
 
 const router = createBrowserRouter(
@@ -18,7 +17,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<App />}>
       <Route index element={<Login />} />
       <Route path="/live" element={<Live />} />
-      <Route path="/computer" element={<Computer />} />
+      <Route path="/computer" element={<Live />} />
       <Route path="/correspondence" element={<Correspondence />} />
       <Route path="/messages" element={<Messages />} />
       <Route path="/profile" element={<Profile />} />

@@ -19,8 +19,17 @@ function Live() {
     const {gameId} = useSelector((state) => state.gameState)
     const playSound = useSelector((state) => state.playSound)
     const blackColor = useSelector(state => state.blackColor)
+    const vsComputer = useSelector(state => state.vsComputer)
     const dispatch = useDispatch()
-    console.log('userId', userId, 'username', username, 'status', status, 'socketId', socketId, 'gameId', gameId, 'playSound', playSound, 'blackColor', blackColor)
+
+    function handleStartComp(e) {
+      e.preventDefault()
+      emitters['startComp']({userId, color})
+    }
+    
+    const [color, setColor] = useState('white')
+
+    // console.log('userId', userId, 'username', username, 'status', status, 'socketId', socketId, 'gameId', gameId, 'playSound', playSound, 'blackColor', blackColor, 'vsComputer', vsComputer)
 
     // Attatch socket listeners and connect to socketserver
     useEffect(() => {
@@ -169,7 +178,7 @@ function Live() {
         }
       }
 
-      // handle draw offer
+      // handle draw offer NEEDS IMPLEMENTED
       function handleDrawOffer() {
         console.log('handleDrawOffer triggered')
         let response = ''
@@ -217,7 +226,7 @@ function Live() {
 
     }, [])
 
-    // Get user game settings
+    // Get user game settings MIGHT NEED TO FIX TO REFRESH WHEN SETTINGS CHANGE
     useEffect(() => {
       console.log('predispatch playSound', playSound)
       axios.get(`/users/${userId}`)
@@ -301,6 +310,12 @@ function Live() {
         console.log('acceptSeek called')
         socket.emit('acceptSeek', {ownerId, userId}, )
       },
+      
+      // emit a request to start a computer match
+      startComp: ({userId, color}) => {
+        console.log('startComp called')
+        socket.emit('startComp', {userId, color}, )
+      },
 
       ///\\\ The below occur inside a game room \\\///
       // emit a move
@@ -317,8 +332,8 @@ function Live() {
 
       // offer draw
       drawOffer: () => {
-        console.log('drawOffer called', {userId})
-        socket.emit('drawOffer')
+        console.log('drawOffer called')
+        socket.emit('drawOffer', {userId})
       },
 
       // emit message (used emit convention to not confuse meaning)
@@ -339,8 +354,6 @@ function Live() {
     }
   return (
     <>
-    {/* <p>playSound: {playSound}</p>
-    <p>blackColor: {blackColor}</p> */}
         {(status==='inGame' || status==='completed') ? (
         <div style={{display: 'flex' }} id='chessBox'>
           <ChessBoard emitters={emitters}/>
@@ -348,7 +361,22 @@ function Live() {
         </div>
         ) : (
           <div >
-            <Seeks emitters={emitters}/>
+            {vsComputer ? (
+              <div className='styledContainer' id='computerForm'>
+              <form onSubmit={(e) => handleStartComp(e)} >
+                <div  className='boldText' id=''>Choose your color</div>
+                <label className='computerFormElement'>
+                  White <input type="radio" name="color" value="white" checked={color==='white'} onChange={()=>setColor('white')}/>
+                </label>
+                <label className='computerFormElement'>
+                  Black <input type="radio" name="color" value="black" checked={color==='black'} onChange={()=>setColor('black')}/>
+                </label>
+                <input type="submit" value="Start" className='startButton' />
+              </form>
+              </div>
+            ) : (
+              <Seeks emitters={emitters}/>
+            )}
           </div>
         )}
     </>

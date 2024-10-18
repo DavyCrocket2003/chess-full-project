@@ -89,6 +89,9 @@ export const handlerFunctions = {
 
     getUser: async (req, res) => {
         console.log('getUser endpoint hit',  req.params)
+        if (!req.params.userId) {
+            res.send({message: 'No userId sent', success: false})
+        }
         try {
             const userData = await User.findByPk(req.params.userId)
             res.send({message: "Here is the user data", userData, success: true})

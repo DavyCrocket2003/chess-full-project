@@ -2,16 +2,17 @@ const initialState = {
     userSession: {
         userId: null,
         username: null,
-        status: 'loggedOut',
+        status: 'loggedOut',// status can take the forms: [loggedOut, loggedIn, seeking, inGame, completed] 
         socketId: null,
     },
     socketSession: {connected: false},  // not really in use
+    vsComputer: false,      // is the user playing a computer? Used for rendering and game logic
     seeks: [],              // populates a list of games to join
     onBottom: 'regular',    // User setting for flipping the board
-    playSound: true,
+    playSound: true,        // User setting true or false for playing sounds
     pieceStyle: 'new',      // 'old' or 'new'
-    blackColor: '#583927',    // '#2E6F1E', // '#583927',
-    whiteColor: '#EAC796', //'#56A62E',    // '#5f9ea0',    // 
+    blackColor: '#583927',  // '#2E6F1E', // '#583927',
+    whiteColor: '#EAC796',  //'#56A62E',    // '#5f9ea0',    // 
     dragOrigin: {square: null, piece: '', moves: []},   // Used for Chessboard to handle drag events
     gameState: {
         squares: {
@@ -95,7 +96,6 @@ const initialState = {
     },
     transcript: [],
     messages: [],
-    clickCount: 0,
     square11Ref: null,      // Intended for anchoring to the chess board for dynamic sizing of other elements
     profileId: null,        // This is for viewing others' profiles.
     messageTarget: null,    // Intended recipient of a message
@@ -113,6 +113,9 @@ export default function reducer(state = initialState, action) {
             
         case "GRAB_PIECE":
             return {...state, dragOrigin: action.payload}
+        
+        case "UPDATE_VS_COMPUTER":
+            return {...state, vsComputer: action.payload}
 
         case "DROP_PIECE":
             return {...state, dragOrigin: {square: null, piece: ''}}
