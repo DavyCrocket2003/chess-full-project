@@ -8,3 +8,7 @@ export const updateSocketSession = (sessionObj) => ({
     payload: sessionObj
 
 })
+export const updateVSComputer = (vsComputer) => ({
+    type: 'UPDATE_VS_COMPUTER',
+    payload: vsComputer
+})

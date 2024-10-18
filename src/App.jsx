@@ -7,7 +7,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { updateUserSession } from './controllers/sessionActions';
+import { updateUserSession, updateVSComputer } from './controllers/sessionActions';
 import handlerFunctions from './controllers/clientController';
 import Login from './pages/Login';
 import './chess.css'
@@ -15,6 +15,7 @@ import './chess.css'
 export default function App() {
 
   const userSession = useSelector((state) => state.userSession)
+  const vsComputer = useSelector((state) => state.vsComputer)
   const dispatch = useDispatch()
   const sessionCheck = async () => {
     const res = await axios.get('/session-check')
@@ -37,6 +38,18 @@ export default function App() {
     }
     dispatch({type: "UPDATE_PROFILE", payload: null})
   }
+  // function for updating state when a user clicks live
+  function handleClickLive() {
+    if (vsComputer && userSession.status!='inGame') {
+      dispatch(updateVSComputer(false))
+    }
+  }
+  // function for updating state when a user clicks computer
+  function handleClickComputer() {
+    if (!vsComputer && userSession.status!='inGame') {
+      dispatch(updateVSComputer(true))
+    }
+  }
 
   return (
     <>
@@ -47,8 +60,8 @@ export default function App() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" >
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/live">Live Chess</Nav.Link>
-            <Nav.Link as={Link} to="/computer">Computer Chess</Nav.Link>
+            <Nav.Link as={Link} to="/live" onClick={handleClickLive}>Live Chess</Nav.Link>
+            <Nav.Link as={Link} to="/computer" onClick={handleClickComputer}>Computer Chess</Nav.Link>
             <Nav.Link as={Link} to="/messages">Messages</Nav.Link>
             <NavDropdown title={userSession.userId ? userSession.username : "User Menu"} id="basic-nav-dropdown">
               <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>

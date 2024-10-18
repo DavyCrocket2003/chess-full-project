@@ -11,11 +11,6 @@ function Seeks({emitters}) {
   const [entryMode, setEntryMode] = useState(false)
   const [entryFormState, setEntryFormState] = useState({name: `${userSession.username}'s Game`, rated: true, time: 300})
   
-
-  useEffect(() => {
-  }, [])
-
-
   const handleSubmitSeek = (e) => {
     e.preventDefault()
     emitters.seek(entryFormState)

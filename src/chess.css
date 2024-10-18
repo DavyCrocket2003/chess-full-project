@@ -35,6 +35,23 @@
     padding-right: 5px;
 }
 
+#computerForm {
+    display: flex;
+    flex-direction: column;
+    max-width: 275px;
+    align-items: center;
+}
+
+.computerFormElement {
+    padding-right: 10px;
+}
+
+.startButton {
+    padding: auto;
+    padding-bottom: 3px;
+    border: 2px solid black;
+}
+
 .formElement {
     margin: 5px;
     margin-top: 0;

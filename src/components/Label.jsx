@@ -26,7 +26,8 @@ function Label({userId, squareRef}) {
     }
     // gets user data from db
     useEffect(() => {
-        fetchUserData(userId)
+        if (userId)
+            fetchUserData(userId)
     }, [])
 
     // function to send users to the profile page for the user in this label
