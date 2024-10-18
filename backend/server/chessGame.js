@@ -813,7 +813,7 @@ function ChessGame(params) {
             gameState.moveHistory.push(origin + target + (p ? p.toLowerCase() : ''))
             evaluateState()     // updates game status with no return value
             gameState.transcript.push(writeMove())
-            // console.log(gameState.pieces)
+            console.log('postMove returning')
             return this.getState()
         },
         findMate: function() {

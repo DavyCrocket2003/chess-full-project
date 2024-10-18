@@ -111,6 +111,7 @@ export function handleConnect(socket, io) {
 
     // Function that checks game state and sends out moves (or game end)
     function executeGameEvents(gameUpdate, gameId) {
+        console.log('executeGameEvents() triggered', gameId)
         // VVV Check for 3-fold repetition draw VVV
         if (gameUpdate.positionCount>=3) {
             // implement emit draw offer
@@ -186,6 +187,7 @@ export function handleConnect(socket, io) {
 
         // Otherwise, game is in progress ('normal') and should just be updated
         if (gameUpdate.status==='normal'){  // send normal game update
+            console.log(`should emit gameUpdate to ${gameId}`)
             io.to(gameId).emit('gameUpdate', gameUpdate)
         }
     }
@@ -264,7 +266,7 @@ export function handleConnect(socket, io) {
         let gameUpdate = games[gameId].postMove(move)   // This updates the game state to account for 'move'
         
 
-        executeGameEvents(gameUpdate)
+        executeGameEvents(gameUpdate, gameId)
 
         // If after the game update it's a computer's turn, fetch a move from stockfish &FS(D*F&S)
         // and update the game again
