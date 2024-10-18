@@ -1,7 +1,12 @@
 import { db, User, Game, Message, Friendship } from './model.js'
 
 await db.sync({ force: true })
-
+  .then(() => {
+    console.log('Database synced successfully');
+  })
+  .catch((err) => {
+    console.error('Error syncing database:', err);
+  });
 let users = ["Cat", "Ty", "Lincoln", "Jesse", "Josh", "Jackson", "Michael", "David"]
 
 for (const user of users) {

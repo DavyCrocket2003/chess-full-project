@@ -134,10 +134,14 @@ Game.init(
       type: DataTypes.ENUM('1-0', '0-1', '½-½'), // Represents white win, black win, or draw.
       allowNull: false,
     },
+    player1Id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     player2Id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-    }
+      allowNull: true,
+    },
   },
   {
     sequelize: db,
