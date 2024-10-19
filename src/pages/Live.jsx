@@ -210,8 +210,6 @@ function Live() {
       
       // manually turn socket on
       socket.connect()
-
-
       return () => {
         socket.off('connectData', handleConnectData)
         socket.off('cancelSeek', handleCancelSeek)
@@ -223,8 +221,7 @@ function Live() {
         dispatch({type: "UPDATE_USER_SESSION", payload: {socketId: null}})
       }
 
-
-    }, [])
+    }, [playSound])
 
     // Get user game settings MIGHT NEED TO FIX TO REFRESH WHEN SETTINGS CHANGE
     useEffect(() => {

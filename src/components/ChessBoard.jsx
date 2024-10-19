@@ -20,7 +20,6 @@ export default function ChessBoard(props) {
   const playerColor = gameState.player1Id === userId ? 'white' : 'black'
   const [squareKeys, setSquareKeys] = useState(null)
   const [opponent, setOpponent] = useState(gameState.player1Id===userId ? gameState.player2Id : gameState.player1Id)
-  let whiteOnBottom = playerColor === 'white' // These couple of lines deal with board direction
   
   useEffect(() => {
     let whiteOnBottom = playerColor === 'white' // These couple of lines deal with board direction
@@ -39,8 +38,6 @@ export default function ChessBoard(props) {
 
   }, [onBottom])
 
-
-
   // set a reference to the first square of the chess board
   // used to style the player labels
   const square11Ref = useRef(null)
@@ -51,10 +48,6 @@ export default function ChessBoard(props) {
       // dispatch({type: "UPDATE_REF", payload: square11Ref})
     }
   })
-  
-
-
-
 
   return (
     <div>

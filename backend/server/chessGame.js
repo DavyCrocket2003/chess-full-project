@@ -20,7 +20,7 @@ function ChessGame(params) {
     // For instance check, stalemate, and checkmate
     // Adapted to look specifically for check mate (mateTest=true) for use in findMate() function
     function evaluateState(mateTest=false, pieces=gameState.pieces, squares=gameState.squares, turn=gameState.turn) {
-        console.log('evaluateState called', 'color', turn, 'mateTest', mateTest)
+        // console.log('evaluateState called', 'color', turn, 'mateTest', mateTest)
         // console.log(gameState.boardHistory)
         currentFlags.check = inCheck(pieces, turn)
         currentFlags.checkmate = false
@@ -836,11 +836,6 @@ function ChessGame(params) {
             }
         }
     }
-
-
-
 }
-
-
 
 export default ChessGame

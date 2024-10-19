@@ -15,6 +15,11 @@ function Label({userId, squareRef}) {
 
     // function to get userData from server
     async function fetchUserData(id) {
+        console.log('fetchUserData hit', id)
+            if (!(id)) {
+                setUserData({photoURL: '../media/blue.jpg', username: 'Blue9000', publicRating: 9000})
+            return
+        }
         const res = await axios.get(`/users/${id}`)
         console.log(res.data)
         if (res.data.success) {
@@ -26,8 +31,7 @@ function Label({userId, squareRef}) {
     }
     // gets user data from db
     useEffect(() => {
-        if (userId)
-            fetchUserData(userId)
+        fetchUserData(userId)
     }, [])
 
     // function to send users to the profile page for the user in this label
@@ -44,6 +48,8 @@ function Label({userId, squareRef}) {
         }
     }, [])  
     
+    // computer npc data
+    let compData = {photoURL: '../media/blue.jpg', username: 'Blue9000', publicRating: '4000'}
 
 
 
@@ -69,7 +75,7 @@ function Label({userId, squareRef}) {
         <div className="labelItem" >{userData.publicRating}</div>
       
     </div>
-  ) : (<div className='labelDiv'>Loading...</div>)
+  ) : (<div className='labelDiv'><div className='labelItem'>Loading...</div></div>)
 }
 
 export default Label

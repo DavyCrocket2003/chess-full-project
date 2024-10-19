@@ -51,10 +51,6 @@ export default function ChessBoard(props) {
       // dispatch({type: "UPDATE_REF", payload: square11Ref})
     }
   })
-  
-
-
-
 
   return (
     <div>

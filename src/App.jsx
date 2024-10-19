@@ -53,7 +53,7 @@ export default function App() {
 
   return (
     <>
-    <Navbar expand="lg" className="bg-body-tertiary" onClick={handleCompletedToLoggedIn} style={{border: '1px solid black'}}>
+    <Navbar expand="sm" className="bg-body-tertiary" onClick={handleCompletedToLoggedIn} style={{border: '1px solid black'}}>
       <Container>
         <Navbar.Brand as={Link} style={{/*marginLeft: '20px'*/}} to="/"><img
             src="./chess.jpg" alt="Chess icon" width="30" height="30" className="d-inline-block align-top"/></Navbar.Brand>
