@@ -79,6 +79,8 @@ app.put('/messages', handlerFunctions.putMessage)
 
 app.delete('/messages/:messageId', handlerFunctions.deleteMessage)
 
+app.get('/games/:userId', handlerFunctions.getGames)
+
 
 
 

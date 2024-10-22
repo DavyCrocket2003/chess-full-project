@@ -34,11 +34,10 @@ const game1 = await Game.create({
   player2Time: null,
   timeControl: null,
   rated: false,
-  result: '½-½',
+  status: '½-½',
   player1Id: 8,
   player2Id: 7,
-
-
+  result: 'stalemate'
 })
 
 const game2 = await Game.create({
@@ -48,10 +47,10 @@ const game2 = await Game.create({
   player2Time: null,
   timeControl: null,
   rated: false,
-  result: '1-0',
+  status: '1-0',
   player1Id: 3,
   player2Id: 4,
-
+  result: 'checkmate'
 })
 
 const game3 = await Game.create({
@@ -61,10 +60,10 @@ const game3 = await Game.create({
   player2Time: null,
   timeControl: null,
   rated: false,
-  result: '0-1',
+  status: '0-1',
   player1Id: 5,
   player2Id: 4,
-
+  result: 'checkmate'
 })
 
 await Friendship.create({user1Id: 1, user2Id: 8, status: 'accepted', requestedBy: 8})

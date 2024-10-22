@@ -130,8 +130,12 @@ Game.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    result: {
+    status: {
       type: DataTypes.ENUM('1-0', '0-1', '½-½'), // Represents white win, black win, or draw.
+      allowNull: false,
+    },
+    result: {
+      type: DataTypes.ENUM('checkmate', 'stalemate', 'agreement', 'resignation', 'abandonment', 'insufficient', 'timeout', 'repetition3Fold', 'repetition5Fold', 'fiftyMoveRule'), // Represents white win, black win, or draw.
       allowNull: false,
     },
     player1Id: {
@@ -237,9 +241,10 @@ Friendship.init(
 
 
 // Set up foreign keys
-User.hasMany(Game, { as: 'player1', foreignKey: 'player1Id'})
-User.hasMany(Game, { as: 'player2', foreignKey: 'player2Id'})
-Game.belongsTo(User)
+User.hasMany(Game, { as: 'gamesAsPlayer1', foreignKey: 'player1Id'})
+User.hasMany(Game, { as: 'gamesAsPlayer2', foreignKey: 'player2Id'})
+Game.belongsTo(User, { as: 'player1', foreignKey: 'player1Id'})
+Game.belongsTo(User, { as: 'player2', foreignKey: 'player2Id'})
 
 
 User.hasMany(Message, { foreignKey: 'senderId', as: 'sentMessages' });

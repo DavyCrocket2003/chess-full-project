@@ -169,6 +169,20 @@ export const handlerFunctions = {
         });
     },
 
+    getGames: async (req, res) => {
+        console.log('getGames requested for user:', req.params)
+        const {userId} = req.params
+        const unsortedGames = await Game.findAll({
+            where: {[Op.or]: [{player1Id: userId}, {player2Id: userId}]},
+            attributes: ['gameId', 'createdAt', 'moves', 'status', 'player1Id', 'player2Id'],
+            include: [
+                {model: User, as: 'player1', attributes: ['username']},
+                {model: User, as: 'player2', attributes: ['username']}
+            ]
+        })
+        res.send({message: 'Here is the list of games', success: true, games: unsortedGames})
+    },
+
     getFriends: async (req, res) => {
         const {userId} = req.params
         const unsortedFriends = await Friendship.findAll({
