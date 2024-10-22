@@ -21,6 +21,7 @@ function Live() {
     const blackColor = useSelector(state => state.blackColor)
     const vsComputer = useSelector(state => state.vsComputer)
     const dispatch = useDispatch()
+    const [showAcceptDrawModal, setShowAcceptDrawModal] = useState(false)
 
     function handleStartComp(e) {
       e.preventDefault()
@@ -31,7 +32,7 @@ function Live() {
 
     // console.log('userId', userId, 'username', username, 'status', status, 'socketId', socketId, 'gameId', gameId, 'playSound', playSound, 'blackColor', blackColor, 'vsComputer', vsComputer)
 
-    // Attatch socket listeners and connect to socketserver
+    // Attach socket listeners and connect to socketserver
     useEffect(() => {
       // listen for errors
       socket.on('error', (error) => { console.error(error) })
@@ -45,7 +46,7 @@ function Live() {
         resCallback({userId, username, status})
       }
       
-      // handle seek emit   CAN FIX IN REDUCER (to only add 1 time)
+      // handle seek emit   CAN FIX IN REDUCER? (to only add 1 time)
       function handleNewSeek(newSeek) {
         console.log('handleNewSeek triggered', 'newSeek', newSeek)
         dispatch({type: 'UPDATE_SEEKS', payload: newSeek})
@@ -137,7 +138,7 @@ function Live() {
         const {transcript, ...restOfData} = data
         dispatch({type: "UPDATE_GAME", payload: restOfData})
         dispatch({type: "UPDATE_TRANSCRIPT", payload: transcript})
-        console.log('playSound', playSound)
+        // console.log('playSound', playSound)
         if (playSound) {
           let lastMove = data.transcript[data.transcript.length-1]
           if (lastMove.includes('+')) {
@@ -155,42 +156,72 @@ function Live() {
           if (playSound) {
             sound.end.play()
           }
+          // append score to transcript
+          dispatch({type: "UPDATE_TRANSCRIPT", payload: [...transcript, data.status]})
           // print end game message in chat
-          let messageInsert = ''
-          if (data.status === '1-0') {
-            if (data.player1Id === userId) {
-              messageInsert = 'You won!'
-            } else {
-              messageInsert = 'White won'
-            }
-          } else if (data.status === '0-1') {
-            if (data.player2Id === userId) {
-              messageInsert = 'You won!'
-            } else {
-              messageInsert = 'Black won'
-            }
+          let gameMessage = ''
+          let whiteWon = data.status === '1-0'
+          let player1White = data.player1Id===userId
+          let userWon = whiteWon===player1White
+          switch (data.result) {
+            case 'checkmate':
+              gameMessage = data.message + (userWon ? 'You won!' : (whiteWon ? 'White won' : 'Black won'))
+              break;
+          
+            case 'stalemate':
+              // Handle stalemate result
+              break;
+          
+            case 'agreement':
+              gameMessage = 'Game drawn by agreement'
+              break;
+          
+            case 'resignation':
+              gameMessage = userWon ? 'You won by resignation' : 'You resigned'
+              break;
+          
+            case 'abandonment':
+              gameMessage = 'Game abandoned'
+              break;
+          
+            case 'insufficient':
+              gameMessage = 'Insufficient material'
+              break;
+          
+            case 'timeout':
+              gameMessage = (userWon ? 'You won' : (whiteWon ? 'White won' : 'Black won')) + ' by timeout'
+              break;
+          
+            case 'repetition3Fold':
+              gameMessage = 'Drawn by 3 fold repetition'
+              break;
+          
+            case 'repetition5Fold':
+              gameMessage = 'Drawn by 5 fold repetition'
+              break;
+          
+            case 'fiftyMoveRule':
+              gameMessage = 'Drawn by 50 move rule'
+              break;
+          
+            default:
+              gameMessage = 'Error with game ending'
+              break;
           }
           dispatch(updateUserSession({status: 'completed'}))
           axios.put(`/status/${userId}`, {status: 'completed'})
-          dispatch({type: "UPDATE_MESSAGES", payload: {senderName: 'Game', message: data.message + messageInsert}})
-
-          // do other game end things
+          dispatch({type: "UPDATE_MESSAGES", payload: {senderName: 'SYSTEM', message: gameMessage}})
         }
       }
 
       // handle draw offer NEEDS IMPLEMENTED
       function handleDrawOffer() {
         console.log('handleDrawOffer triggered')
-        let response = ''
-        while (!(response === 'Y' || response === 'N')) {
-            response = prompt('Would you like to accept a draw? Y or N')[0].toUpperCase()
-        }
-        socket.emit('acceptDraw')
+        setShowAcceptDrawModal(true)
       }
 
       // handle message
       function handleMessage({senderName, message}) {
-        //  Need to implement
         console.log(message)
         dispatch({type: "UPDATE_MESSAGES", payload: {senderName, message}})
       }
@@ -223,15 +254,14 @@ function Live() {
 
     }, [playSound])
 
-    // Get user game settings MIGHT NEED TO FIX TO REFRESH WHEN SETTINGS CHANGE
+    // Get user game settings
     useEffect(() => {
-      console.log('predispatch playSound', playSound)
+      // console.log('predispatch playSound', playSound)
       axios.get(`/users/${userId}`)
       .then((res) => {
-        console.log(res.data)
+        // console.log(res.data)
         const {playSound, pieceStyle, whiteColor, blackColor, onBottom} = res.data.userData
         dispatch({type: 'UPDATE_STATE', payload: {playSound, pieceStyle, whiteColor, blackColor, onBottom}})
-        console.log('postdispatch playSound', playSound)
       })
     }, [])
 
@@ -332,6 +362,13 @@ function Live() {
         console.log('drawOffer called')
         socket.emit('drawOffer', {userId})
       },
+      
+      // execute draw (for an accepted draw or claiming 3 fold repetition)
+      draw: (message) => {
+        console.log('emit draw() called', message)
+        socket.emit('draw', {userId, message})
+
+      },
 
       // emit message (used emit convention to not confuse meaning)
       emitMessage: (message) => {
@@ -354,7 +391,7 @@ function Live() {
         {(status==='inGame' || status==='completed') ? (
         <div style={{display: 'flex' }} id='chessBox'>
           <ChessBoard emitters={emitters}/>
-          <GamePanel emitters={emitters}/>
+          <GamePanel emitters={emitters} status={status} acceptDrawModal={{showAcceptDrawModal, setShowAcceptDrawModal}}/>
         </div>
         ) : (
           <div >

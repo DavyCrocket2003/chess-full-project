@@ -1,16 +1,15 @@
 import React from 'react';
-import './Modal.css'; // Add your own styling
 
 const Modal = ({ isOpen, title, message, onConfirm, onCancel }) => {
-  if (!isOpen) return null;
+  if (!isOpen) return null; // Don't render anything if the modal is closed
 
   return (
     <div className="modal-overlay">
-      <div className="modal">
+      <div className="custom-modal">
         <h2>{title}</h2>
         <p>{message}</p>
-        <button onClick={onConfirm}>Yes</button>
-        <button onClick={onCancel}>No</button>
+        <button className="modalButton" onClick={onConfirm}>Yes</button>
+        <button className="modalButton" onClick={onCancel}>No</button>
       </div>
     </div>
   );
