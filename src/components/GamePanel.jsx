@@ -87,6 +87,8 @@ function GamePanel({ emitters, status, acceptDrawModal: {showAcceptDrawModal, se
         <button id='resignButton' onClick={handleResign} className={`gameButton ${status!=='inGame'?'disabled':''}`}>Resign</button>
         <button id='drawButton' onClick={handleDraw} className={`gameButton ${status!=='inGame'?'disabled':''}`}>Draw</button>
       </div>
+      
+      <Messages emitMessage={emitters.emitMessage} />
 
       {/* Resign Confirmation Modal */}
       <Modal
@@ -115,7 +117,6 @@ function GamePanel({ emitters, status, acceptDrawModal: {showAcceptDrawModal, se
         onCancel={()=>setShowAcceptDrawModal(false)}
       />
 
-      <Messages emitMessage={emitters.emitMessage} />
     </div>
   );
 }

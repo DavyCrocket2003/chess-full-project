@@ -389,7 +389,7 @@ function Live() {
   return (
     <>
         {(status==='inGame' || status==='completed') ? (
-        <div style={{display: 'flex' }} id='chessBox'>
+        <div id='chessBox'>
           <ChessBoard emitters={emitters}/>
           <GamePanel emitters={emitters} status={status} acceptDrawModal={{showAcceptDrawModal, setShowAcceptDrawModal}}/>
         </div>

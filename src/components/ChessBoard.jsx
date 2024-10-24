@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DndContext } from '@dnd-kit/core';
-import './ChessBoard.css';
 import Square from './Square';
 import Piece from './Piece';
 import { useSelector, useDispatch } from 'react-redux';
@@ -50,7 +49,7 @@ export default function ChessBoard(props) {
   })
 
   return (
-    <div>
+    <div id='useless'>
       <DndContext modifiers={[snapCenterToCursor]} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
         {squareKeys && <div className="grid" >
           <Label userId={onBottom==="regular" ? opponent : userId} />

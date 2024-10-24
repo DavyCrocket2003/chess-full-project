@@ -78,7 +78,7 @@ export default function App() {
         </Navbar.Collapse>
       </Container>
     </Navbar>
-      <div >
+      <div id='outlet'>
         <div className='backgroundImage'>
         </div>
         {userSession.userId ? (<Outlet />) : (<Login />)}
