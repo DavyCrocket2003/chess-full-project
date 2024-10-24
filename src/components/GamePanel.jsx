@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import './GamePanel.css';
 import Messages from './Messages';
 import Modal from './Modal'; // Import the modal
 
