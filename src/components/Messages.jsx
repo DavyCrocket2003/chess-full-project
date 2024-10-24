@@ -1,6 +1,5 @@
 import React, {useRef, useEffect, useState} from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import './Messages.css'
 
 function Messages({emitMessage}) {
 
@@ -30,7 +29,7 @@ function Messages({emitMessage}) {
         <div key={idx}><span color={userColor}>{senderName}: </span>{message}</div>
       ))}
       <form className='chatFormContainer' onSubmit={(e) => handleSubmit(e)}>
-        <input value={messageInput} style={{maxWidth: '100px'}} type='text' placeholder='Chat...' onChange={(e) => setMessageInput(e.target.value)} />
+        <input className='messageInput' value={messageInput} style={{maxWidth: '100px'}} type='text' placeholder='Chat...' onChange={(e) => setMessageInput(e.target.value)} />
         <button type='submit' >Send</button>
       </form>
     </div>
