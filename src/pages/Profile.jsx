@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import handlerFunctions from "../controllers/clientController"
 import { useParams, useNavigate } from 'react-router-dom'
 import CompletedGames from '../components/CompletedGames'
-import './Profile.css'
 
 
 
@@ -129,7 +128,7 @@ function Profile() {
   return userData ? (
     <>
       <div className='styledContainer' id='profileBox'>
-        <table>
+        <table className='profileTable'>
           <tbody>
             <tr>
               <td>

@@ -1,7 +1,7 @@
 // This file handles all the events for managing live games
 import { v4 as uuidv4 } from 'uuid'
 import ChessGame from './ChessGame.js'
-import {User, Game} from '../database/model.js'
+import {User, Game, BoardState} from '../database/model.js'
 import { getBestMove } from './stockfish.js'
 
 
@@ -116,13 +116,14 @@ export function handleConnect(socket, io) {
     // 4. Emit game end
     // 5. Remove sockets from room
     // 6. Remove game from games list
-    function closeGame(gameObj) {
-        console.log('closeGame called', gameObj.gameId)
+    async function closeGame(gameObj) {
+        console.log('closeGame called', gameObj)
         // 1. Save the game to the database
         console.log('Game Saving', gameObj.gameId)
-        Game.create({
+        await Game.create({   //1. a) create the game obj
             uuid: gameObj.gameId,
-            moves: gameObj.moveHistory,
+            // moves: gameObj.moveHistory,  // moves is now handled in seperate table BoardStates
+            length: (gameObj.boardHistory.length / 2) | 0,
             player1Time: gameObj.player1Time,
             player2Time: gameObj.player2Time,
             timeControl: gameObj.timeControl,
@@ -133,6 +134,12 @@ export function handleConnect(socket, io) {
             player2Id: gameObj.player2Id,
 
         })
+        let myStates = []   // 1. b) create the board state records
+        for (let i=0; i<gameObj.boardHistory.length; i++) {
+            myStates.push({gameUuid: gameObj.gameId, index: i, fen: gameObj.boardHistory[i], move: gameObj.moveHistory[i], transcriptMove: gameObj.transcript[i]})
+        }
+        console.log('myStates:', myStates)
+        BoardState.bulkCreate(myStates)
 
         // 2. Update player ratings
         console.log('Ratings being updated', gameObj.gameId)
@@ -261,7 +268,7 @@ export function handleConnect(socket, io) {
 
     // Handle the computer's turn
     async function  computerMove(gameUpdate, gameId) {
-        console.log('computerMove called', gameUpdate, gameId)
+        // console.log('computerMove called', gameUpdate, gameId)
         let data = await getBestMove(gameUpdate.fen)
         let bestMove = data.bestmove
         let origin, target, p

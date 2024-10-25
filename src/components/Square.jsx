@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 function Square(props) {
   const {isOver, setNodeRef} = useDroppable({id: props.id})
 
-  // // Extract the piece from the pieceData object
+  // Extract the piece from the pieceData object in the redux store
   const pieceData = useSelector((state) => state.gameState.squares[props.id])
   const dragOrigin = useSelector((state) => state.dragOrigin)
   const myPiece = pieceData ? pieceData.piece : null;
