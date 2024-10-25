@@ -37,7 +37,7 @@
     margin-left: auto;
     margin-right: auto;
     background-color: #cccccc;
-    border-bottom: 10px solid black;
+    border-bottom: 1px solid black;
 }
 
 .gameListTable th, .gameListTable td {
@@ -250,7 +250,7 @@ body {
     height: 100%;
 }
 
-#chessBox {
+.chessBox {
     display: flex;
     flex-direction: row;
     height: 100vmin;
@@ -261,7 +261,7 @@ body {
 }
 
 /* The seemingly useless div in ChessBoard.jsx that contains .grid */
-#useless {
+.useless {
     flex-wrap: nowrap;
     display: flex;
     height: 100%;
@@ -288,9 +288,23 @@ body {
     padding: 5px;
 }
 
+.staticTranscriptContainer{
+    flex-grow: 1;
+    overflow-y: auto;
+    background-color: white;
+    border: 2px solid black;
+    padding: 5px;
+}
+
 /* Control Button Styling */
 .controlButtons {
     width: 100%;
+}
+.arrowButtons {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    height: 40px;
 }
 
 .gameButton {
@@ -304,7 +318,24 @@ body {
     transition: background-color 0.3s ease;
 }
 
-  #drawButton {
+.imageButton {
+    padding: 0;
+    border: 2px solid black;
+    flex-grow: 1;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.buttonImage {
+    max-width: 100%;
+    height: 40px;
+    object-fit: contain;
+    aspect-ratio: 1 / 1;
+}
+
+#drawButton {
     width: 50%;
 }
 
@@ -347,4 +378,17 @@ body {
     max-width: 100px;
 }
 
-  
+/* Profile Styling */
+.profileTable {
+    border-collapse: separate;
+    border-spacing: 0px;
+}
+
+
+.profileTable td, .profileTable th {
+    max-width: 175px;
+}
+
+.profileTable input {
+    max-width: 175px;
+}

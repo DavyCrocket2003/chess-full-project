@@ -19,7 +19,7 @@ export default function App() {
   const dispatch = useDispatch()
   const sessionCheck = async () => {
     const res = await axios.get('/session-check')
-    console.log(res.data)
+    // console.log(res.data)
     if (res.data.success) {
       dispatch(updateUserSession(res.data))
     }
@@ -31,7 +31,7 @@ export default function App() {
 
   // function for taking a user away from a completed live game
   function handleCompletedToLoggedIn() {
-    console.log('handleCompletedToLoggedIn called', userSession)
+    // console.log('handleCompletedToLoggedIn called', userSession)
     if (userSession.status === 'completed') {
       dispatch(updateUserSession({status: 'loggedIn'}))
       axios.put(`/status/${userSession.userId}`, {status: 'loggedIn'})
@@ -56,7 +56,7 @@ export default function App() {
     <Navbar expand="sm" className="bg-body-tertiary" onClick={handleCompletedToLoggedIn} style={{border: '1px solid black'}}>
       <Container>
         <Navbar.Brand as={Link} style={{/*marginLeft: '20px'*/}} to="/"><img
-            src="./chess.jpg" alt="Chess icon" width="30" height="30" className="d-inline-block align-top"/></Navbar.Brand>
+            src="./media/chess.jpg" alt="Chess icon" width="30" height="30" className="d-inline-block align-top"/></Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" >
           <Nav className="me-auto">

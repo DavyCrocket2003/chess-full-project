@@ -11,6 +11,7 @@ import Messages from './pages/Messages.jsx'
 import Profile from './pages/Profile.jsx'
 import Friends from './pages/Friends.jsx'
 import Settings from './pages/Settings.jsx'
+import Review from './pages/Review.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,6 +24,7 @@ const router = createBrowserRouter(
       <Route path="/profile" element={<Profile />} />
       <Route path="/friends" element={<Friends />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/review/:gameId" element={<Review />} />
     </Route>,
   ),
 );

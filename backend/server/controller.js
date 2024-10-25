@@ -1,4 +1,4 @@
-import {User, Game, Friendship, Message} from '../database/model.js'
+import {User, Game, Friendship, Message, BoardState} from '../database/model.js'
 import {Op} from 'sequelize'
 import { users as socketUsers } from './gameHandlers.js'
 
@@ -174,13 +174,32 @@ export const handlerFunctions = {
         const {userId} = req.params
         const unsortedGames = await Game.findAll({
             where: {[Op.or]: [{player1Id: userId}, {player2Id: userId}]},
-            attributes: ['gameId', 'createdAt', 'moves', 'status', 'player1Id', 'player2Id'],
+            attributes: ['uuid', 'createdAt', 'status', 'result', 'length', 'player1Id', 'player2Id'],
             include: [
                 {model: User, as: 'player1', attributes: ['username']},
                 {model: User, as: 'player2', attributes: ['username']}
             ]
         })
         res.send({message: 'Here is the list of games', success: true, games: unsortedGames})
+    },
+
+    getGame: async (req, res) => {
+        let myGame = req.params.gameId
+        try {
+            let myGameObj = await Game.findOne({
+                where: {uuid: myGame},
+                include: [
+                    {model: User, as: 'player1', attributes: ['username']},
+                    {model: User, as: 'player2', attributes: ['username']},
+                    {model: BoardState},
+                ]
+            })
+            res.send({message: 'Here is the game info', gameObj: myGameObj, success: true})
+        } catch (error) {
+            console.log(error)
+            res.send({message: 'Error fetching game', error, success: false})
+        }
+
     },
 
     getFriends: async (req, res) => {

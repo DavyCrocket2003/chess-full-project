@@ -101,21 +101,13 @@ export class Game extends Model {
 }
 Game.init(
   {
-    gameId: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
-    },
     uuid: {
       type: DataTypes.UUID,
-      unique: true,
+      primaryKey: true,
     },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-    },
-    moves: {
-      type: DataTypes.ARRAY(DataTypes.STRING)
     },
     player1Time: {
       type: DataTypes.FLOAT
@@ -134,6 +126,11 @@ Game.init(
       type: DataTypes.ENUM('1-0', '0-1', '½-½'), // Represents white win, black win, or draw.
       allowNull: false,
     },
+    length: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     result: {
       type: DataTypes.ENUM('checkmate', 'stalemate', 'agreement', 'resignation', 'abandonment', 'insufficient', 'timeout', 'repetition3Fold', 'repetition5Fold', 'fiftyMoveRule'), // Represents white win, black win, or draw.
       allowNull: false,
@@ -150,6 +147,43 @@ Game.init(
   {
     sequelize: db,
     modelName: 'game'
+  }
+)
+
+export class BoardState extends Model {
+  [util.inspect.custom]() {
+    return this.toJSON()
+  }
+}
+BoardState.init(
+  {
+    boardStateId: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    gameUuid: {    // FEN representation of state
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    index: {  // Start at 0 and increment up
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    fen: {    // FEN representation of state
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    move: {   // The algebraic move that was taken from this position. Can be null if it's the last move made
+      type: DataTypes.STRING,
+    },
+    transcriptMove: {   // The move that was taken from this position. Can be null if it's the last move made
+      type: DataTypes.STRING,
+    },
+  },
+  {
+    sequelize: db,
+    modelName: 'boardState'
   }
 )
 
@@ -209,11 +243,9 @@ Friendship.init(
     user1Id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      allowNull: false,
     },
     user2Id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       allowNull: false,
     },
     createdAt: {
@@ -240,12 +272,16 @@ Friendship.init(
 
 
 
+
+
 // Set up foreign keys
 User.hasMany(Game, { as: 'gamesAsPlayer1', foreignKey: 'player1Id'})
 User.hasMany(Game, { as: 'gamesAsPlayer2', foreignKey: 'player2Id'})
 Game.belongsTo(User, { as: 'player1', foreignKey: 'player1Id'})
 Game.belongsTo(User, { as: 'player2', foreignKey: 'player2Id'})
 
+Game.hasMany(BoardState, {foreignKey: 'gameUuid'})
+BoardState.belongsTo(Game, {foreignKey: 'gameUuid'})
 
 User.hasMany(Message, { foreignKey: 'senderId', as: 'sentMessages' });
 User.hasMany(Message, { foreignKey: 'receiverId', as: 'receivedMessages' });

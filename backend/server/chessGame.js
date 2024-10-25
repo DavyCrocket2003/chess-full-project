@@ -786,6 +786,7 @@ function ChessGame(params) {
                 fen: gameState.boardHistory[gameState.boardHistory.length-1], // return fen notation of current board
                 transcript: gameState.transcript,   // written record of moves as an array with bells and whistles
                 moveHistory: gameState.moveHistory, // bare minimum move history
+                boardHistory: gameState.boardHistory,// array of FENs showing chronological board states
                 status: gameState.status,           // 'normal', 'check', '1-0', '0-1', or '½-½'
                 turn: gameState.turn,               // 'white' or 'black'
                 message: gameState.message,         // For conveying miscellaneous game info

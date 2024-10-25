@@ -49,7 +49,7 @@ export default function ChessBoard(props) {
   })
 
   return (
-    <div id='useless'>
+    <div className='useless'>
       <DndContext modifiers={[snapCenterToCursor]} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
         {squareKeys && <div className="grid" >
           <Label userId={onBottom==="regular" ? opponent : userId} />
